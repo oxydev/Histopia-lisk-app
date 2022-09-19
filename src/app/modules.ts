@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Application } from 'lisk-sdk';
+import { HistopianftModule } from "./modules/histopianft/histopianft_module";
+
 // import { HistopiaNFTModule } from "../../old/histopia_n_f_t/histopia_n_f_t_module";
 
-export const registerModules = (_app: Application): void => {
+export const registerModules = (app: Application): void => {
 
-    // _app.registerModule(HistopiaNFTModule);
+    app.registerModule(HistopianftModule);
 };

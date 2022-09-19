@@ -7,7 +7,7 @@ const typesSchema = {
     $id: "lisk/Histopia/nft/types",
     type: "object",
     properties: {
-        types: {
+        registeredTypes: {
             type: "array",
             fieldNumber: 1,
             items: {
