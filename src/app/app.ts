@@ -15,14 +15,20 @@ export const getApplication = (
 		...config,
 
 		plugins: {
-			faucet: {
-				encryptedPassphrase: encryptedPassphrase,
-				port: 4004,
+			// faucet: {
+			// 	encryptedPassphrase: encryptedPassphrase,
+			// 	port: 4004,
+			// 	host: '0.0.0.0',
+			// 	applicationUrl: 'ws://localhost:8082/ws',
+			// 	fee: '0.1',
+			// 	amount: '10000',
+			// 	tokenPrefix: 'lsk',
+			// },
+			dashboard: {
+				applicationUrl: 'wss://lisk.histopia.io/wss/ws',
+				port: 4005,
 				host: '0.0.0.0',
-				applicationUrl: 'ws://localhost:8082/ws',
-				fee: '0.1',
-				amount: '10000',
-				tokenPrefix: 'lsk',
+				applicationName: 'Lisk',
 			}
 		}
 	}
