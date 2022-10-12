@@ -2,20 +2,21 @@
 
 import {
     AfterBlockApplyContext,
-
-
     AfterGenesisBlockApplyContext, BaseModule,
-
-
     BeforeBlockApplyContext, TransactionApplyContext
 } from 'lisk-sdk';
 import { AddTypeAsset } from "./assets/add_type_asset";
-import { getAllTypes } from './typeHandler';
+import { MintNFTAsset } from "./assets/mint_n_f_t_asset";
+import { getAllTypesAsJSON } from './typeHandler';
+import {getAllNFTsAsJSON} from "./nftHandler";
 
 export class HistopianftModule extends BaseModule {
     public actions = {
         getAllTypes: async () => {
-            getAllTypes(this._dataAccess)
+            return  getAllTypesAsJSON(this._dataAccess)
+        },
+        getAllNFTs: async () => {
+            return getAllNFTsAsJSON(this._dataAccess)
         }
     };
     public reducers = {
@@ -33,9 +34,10 @@ export class HistopianftModule extends BaseModule {
 		// },
     };
     public name = 'histopianft';
-    public transactionAssets = [new AddTypeAsset()];
+    public transactionAssets = [new AddTypeAsset(), new MintNFTAsset()];
     public events = [
-        'histopianft:newType'
+        'histopianft:newType',
+        'histopianft:newNFT',
     ];
     public id = 1024;
 

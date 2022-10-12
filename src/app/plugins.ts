@@ -9,5 +9,5 @@ export const registerPlugins = (app: Application): void => {
     app.registerPlugin(GetAllTypesPlugin);
     app.registerPlugin(HTTPAPIPlugin);
     app.registerPlugin(DashboardPlugin);
-    // app.registerPlugin(FaucetPlugin);
+    app.registerPlugin(FaucetPlugin);
 };

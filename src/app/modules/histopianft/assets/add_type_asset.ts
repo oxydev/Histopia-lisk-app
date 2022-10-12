@@ -72,9 +72,10 @@ export class AddTypeAsset extends BaseAsset {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		const allTypes = await getAllTypes(stateStore);
-
+		// throw new Error('Not implemented.');
+		console.log("allTypes", allTypes);
 		const typeObject = {
-			id: allTypes.length(),
+			id: allTypes.length,
 			nftProperties: asset.nftProperties,
             name: asset.name,
             maxSupply: asset.maxSupply,
