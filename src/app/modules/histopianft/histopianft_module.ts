@@ -2,12 +2,15 @@
 
 import {
     AfterBlockApplyContext,
-    AfterGenesisBlockApplyContext, BaseModule,
-    BeforeBlockApplyContext, TransactionApplyContext
+    AfterGenesisBlockApplyContext,
+    BaseModule,
+    BeforeBlockApplyContext,
+    StateStore,
+    TransactionApplyContext
 } from 'lisk-sdk';
-import { AddTypeAsset } from "./assets/add_type_asset";
-import { MintNFTAsset } from "./assets/mint_n_f_t_asset";
-import { getAllTypesAsJSON } from './typeHandler';
+import {AddTypeAsset} from "./assets/add_type_asset";
+import {MintNFTAsset} from "./assets/mint_n_f_t_asset";
+import {getAllTypesAsJSON, getType} from './typeHandler';
 import {getAllNFTsAsJSON} from "./nftHandler";
 
 export class HistopianftModule extends BaseModule {
@@ -21,17 +24,16 @@ export class HistopianftModule extends BaseModule {
     };
     public reducers = {
         // Example below
-        // getBalance: async (
-		// 	params: Record<string, unknown>,
-		// 	stateStore: StateStore,
-		// ): Promise<bigint> => {
-		// 	const { address } = params;
-		// 	if (!Buffer.isBuffer(address)) {
-		// 		throw new Error('Address must be a buffer');
-		// 	}
-		// 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
-		// 	return account.token.balance;
-		// },
+        getType: async (
+			params: Record<string, unknown>,
+			stateStore: StateStore,
+		): Promise<bigint> => {
+			const { typeId } = params;
+			if (!typeId) {
+                throw new Error('Must provide typeId');
+            }
+            return await getType(stateStore, typeId);
+		},
     };
     public name = 'histopianft';
     public transactionAssets = [new AddTypeAsset(), new MintNFTAsset()];
