@@ -1,6 +1,6 @@
 
-const { codec, cryptography } = require("lisk-sdk");
-const { CHAIN_STATE_NFT_TYPES,typesSchema ,typeSchema} = require("./schemas");
+const { codec } = require("lisk-sdk");
+const { CHAIN_STATE_NFT_TYPES,typesSchema } = require("./schemas");
 
 
 
@@ -37,26 +37,3 @@ export const getAllTypesAsJSON = async (dataAccess) => {
      return codec.toJSON(typesSchema, registeredTokens)
         .registeredTypes;
 };
-
-export const getType = async (stateStore, typeId) => {
-    const registeredTypesBuffer = await stateStore.chain.get(
-        CHAIN_STATE_NFT_TYPES+":"+typeId
-    );
-    if (!registeredTypesBuffer) {
-        return [];
-    }
-
-    const registeredTokens = codec.decode(
-        typeSchema,
-        registeredTypesBuffer
-    );
-
-    return registeredTokens.registeredTypes;
-}
-
-export const addNewType = async (stateStore, type) => {
-    await stateStore.chain.set(
-        CHAIN_STATE_NFT_TYPES+":"+type.id,
-        codec.encode(typesSchema, type)
-    );
-}
