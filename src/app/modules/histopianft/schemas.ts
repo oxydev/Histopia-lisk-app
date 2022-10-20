@@ -1,7 +1,19 @@
 // This key is used to save the data for the hello counter in the database
 const CHAIN_STATE_NFT_TOKENS = "nft:registeredNFTTokens";
 const CHAIN_STATE_NFT_TYPES = "nft:registeredNFTTypes";
+const CHAIN_STATE_TYPES = "nft:typesStateStore";
 
+const typesStateStoreSchema = {
+    $id: "lisk/Histopia/nft/typesStateStore",
+    type: "object",
+    required: ["registeredTypesCount"],
+    properties: {
+        registeredTypesCount: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        }
+    }
+}
 
 const typesSchema = {
     $id: "lisk/Histopia/nft/types",
@@ -109,5 +121,7 @@ module.exports = {
     CHAIN_STATE_NFT_TOKENS,
     CHAIN_STATE_NFT_TYPES,
     typesSchema,
-    nftTokensSchema
+    nftTokensSchema,
+    typesStateStoreSchema,
+    CHAIN_STATE_TYPES
 };
