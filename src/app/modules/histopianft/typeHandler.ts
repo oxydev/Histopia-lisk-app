@@ -1,39 +1,105 @@
-
-const { codec } = require("lisk-sdk");
-const { CHAIN_STATE_NFT_TYPES,typesSchema } = require("./schemas");
-
+const {codec} = require("lisk-sdk");
+import * as Schemas from "./schemas";
 
 
-export const getAllTypes = async (stateStore) => {
-    const registeredTypesBuffer = await stateStore.chain.get(
-        CHAIN_STATE_NFT_TYPES
+export const getTypesState = async (stateStore) => {
+    const typesStateBuffer = stateStore.chain.get(
+        Schemas.CHAIN_STATE_TYPES
     );
-    if (!registeredTypesBuffer) {
-        return [];
+    if (!typesStateBuffer) {
+        return {
+            registeredTypesCount: 10,
+        };
+    }
+     let typesState = codec.decode(
+        Schemas.typesStateStoreSchema,
+        typesStateBuffer
+    );
+    console.log("typesStateBuffer", typesState);
+    return typesState;
+}
+
+export const getTypesStateAsJson = async (dataAccess) => {
+    const typesStateBuffer = dataAccess.getChainState(
+        Schemas.CHAIN_STATE_TYPES
+    );
+    if (!typesStateBuffer) {
+        return 100;
     }
 
-    return codec.decode(
-        typesSchema,
-        registeredTypesBuffer
+    const typesState = codec.decode(
+        Schemas.typesStateStoreSchema,
+        typesStateBuffer
     );
+    console.log("typesStateBuffer", typesState);
+
+    return typesState.registeredTypesCount;
 }
 
 
-export const getAllTypesAsJSON = async (dataAccess) => {
-    console.log("getAllTypesAsJSON");
-    const registeredTypesBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_NFT_TYPES
-    );
-
-    if (!registeredTypesBuffer) {
-        return [];
+export const getType = async (stateStore, typeId) => {
+    const typesState = await getTypesState(stateStore);
+    if (!typesState) {
+        return undefined;
     }
-
-    const registeredTokens = codec.decode(
-        typesSchema,
-        registeredTypesBuffer
+    if (typeId > typesState.registeredTypesCount) {
+        return undefined;
+    }
+    const registeredTypeBuffer = await stateStore.chain.get(
+        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId
     );
+    if (!registeredTypeBuffer) {
+        return undefined;
+    }
+    return codec.decode(
+        Schemas.typeSchema,
+        registeredTypeBuffer
+    );
+}
 
-     return codec.toJSON(typesSchema, registeredTokens)
-        .registeredTypes;
-};
+export const getTypeAsJson = async (dataAccess, typeId) => {
+    const typesState = await getTypesStateAsJson(dataAccess);
+    if (!typesState) {
+        return undefined;
+    }
+    if (typeId > typesState.registeredTypesCount) {
+        return undefined;
+    }
+    const registeredTypeBuffer = await dataAccess.getChainState(
+        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId
+    );
+    if (!registeredTypeBuffer) {
+        return undefined;
+    }
+    return codec.toJSON(
+        Schemas.typeSchema,
+        codec.decode(
+            Schemas.typeSchema,
+            registeredTypeBuffer
+        ));
+}
+
+export const addNewType = async (stateStore, typeId, typeObject) => {
+    const typesState = await getTypesState(stateStore);
+    if (!typesState) {
+        return undefined;
+    }
+    if (typeId > typesState.registeredTypesCount) {
+        throw new Error("Type ID is too high");
+    }
+    await stateStore.chain.set(
+        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId,
+        codec.encode(Schemas.typeSchema, typeObject)
+    );
+    typesState.registeredTypesCount += 1;
+    // delete typesState.registeredTypesCount;
+    let x = {
+        registeredTypesCount: typesState.registeredTypesCount,
+    }
+    await stateStore.chain.set(
+        Schemas.CHAIN_STATE_TYPES,
+        codec.encode(Schemas.typesStateStoreSchema, x)
+    );
+    console.log("typesStateBuffer", typesState, codec.encode(Schemas.typesStateStoreSchema, x));
+    return true;
+}

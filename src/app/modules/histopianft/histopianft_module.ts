@@ -10,17 +10,19 @@ import {
 } from 'lisk-sdk';
 import {AddTypeAsset} from "./assets/add_type_asset";
 import {MintNFTAsset} from "./assets/mint_n_f_t_asset";
-import {getAllTypesAsJSON, getType} from './typeHandler';
-import {getAllNFTsAsJSON} from "./nftHandler";
+import * as TypeHandler from './typeHandler';
 
 export class HistopianftModule extends BaseModule {
     public actions = {
-        getAllTypes: async () => {
-            return  getAllTypesAsJSON(this._dataAccess)
+        getType: async (typeId: number) => {
+            return  TypeHandler.getTypeAsJson(this._dataAccess, typeId);
         },
-        getAllNFTs: async () => {
-            return getAllNFTsAsJSON(this._dataAccess)
-        }
+        getTypesState: async () => {
+            return TypeHandler.getTypesStateAsJson(this._dataAccess);
+        },
+        // getAllNFTs: async () => {
+        //     return getAllNFTsAsJSON(this._dataAccess)
+        // }
     };
     public reducers = {
         // Example below
@@ -32,7 +34,7 @@ export class HistopianftModule extends BaseModule {
 			if (!typeId) {
                 throw new Error('Must provide typeId');
             }
-            return await getType(stateStore, typeId);
+            return await TypeHandler.getType(stateStore, typeId);
 		},
     };
     public name = 'histopianft';

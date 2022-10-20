@@ -1,63 +1,69 @@
 // This key is used to save the data for the hello counter in the database
-const CHAIN_STATE_NFT_TOKEN = "nft:registeredNFTToken";
-const CHAIN_STATE_NFT_TYPES = "nft:registeredNFTTypes";
+export const CHAIN_STATE_NFT_TOKEN = "nft:registeredNFTToken";
+export const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
+export const CHAIN_STATE_TYPES = "nft:typesStateStore";
 
 
-const typesSchema = {
-    $id: "lisk/Histopia/nft/types",
+export const typesStateStoreSchema = {
+    $id: "lisk/Histopia/nft/typesStateStore",
     type: "object",
+    required: ["registeredTypesCount"],
     properties: {
-        registeredTypes: {
-            type: "array",
+        registeredTypesCount: {
+            dataType: "uint32",
             fieldNumber: 1,
-            items: {
-                type: "object",
-                properties: {
-                    id: {
-                        dataType: "uint32",
-                        fieldNumber: 1,
-                    },
-                    nftProperties: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            required: ["name", "minimum", "maximum"],
-                            properties: {
-                                name: {
-                                    dataType: "string",
-                                    fieldNumber: 1,
-                                },
-                                minimum: {
-                                    dataType: "uint32",
-                                    fieldNumber: 2,
-                                },
-                                maximum: {
-                                    dataType: "uint32",
-                                    fieldNumber: 3,
-                                }
-                            }
-                        },
-                        fieldNumber: 2,
-                    },
-                    name: {
-                        dataType: "string",
-                        fieldNumber: 3,
-                    },
-                    maxSupply: {
-                        dataType: "uint32",
-                        fieldNumber: 4,
-                    },
-                    allowedAccessorTypes: {
-                        dataType: "uint32",
-                        fieldNumber: 5,
-                    }
-                }
-            }
         }
     }
 }
 
-const nftTokenSchema = {
+export const typeSchema = {
+    $id: "lisk/Histopia/nft/types",
+    type: "object",
+    required: ["id", "nftProperties", "name", "allowedAccessorTypes", "maxSupply"],
+
+    properties: {
+        id: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        },
+        nftProperties: {
+            type: "array",
+            items: {
+                type: "object",
+                required: ["name", "minimum", "maximum"],
+                properties: {
+                    name: {
+                        dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    minimum: {
+                        dataType: "uint32",
+                        fieldNumber: 2,
+                    },
+                    maximum: {
+                        dataType: "uint32",
+                        fieldNumber: 3,
+                    }
+                }
+            },
+            fieldNumber: 2,
+        },
+        name: {
+            dataType: "string",
+            fieldNumber: 3,
+        },
+        maxSupply: {
+            dataType: "uint32",
+            fieldNumber: 4,
+        },
+        allowedAccessorTypes: {
+            dataType: "uint32",
+            fieldNumber: 5,
+        }
+    }
+}
+
+export const nftTokenSchema = {
     $id: "lisk/Histopia/nft/tokens",
     type: "object",
     required: ["id", "typeId", "ownerAddress", "minPurchaseMargin", "value", "properties"],
@@ -93,11 +99,3 @@ const nftTokenSchema = {
         }
     }
 }
-
-
-module.exports = {
-    CHAIN_STATE_NFT_TOKEN,
-    CHAIN_STATE_NFT_TYPES,
-    typesSchema,
-    nftTokenSchema
-};

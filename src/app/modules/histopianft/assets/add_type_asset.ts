@@ -1,5 +1,5 @@
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
-import { getAllTypes, setAllTypes } from '../typeHandler';
+import * as TypeHandler from '../typeHandler';
 
 export class AddTypeAsset extends BaseAsset {
 	public name = 'addType';
@@ -71,17 +71,16 @@ export class AddTypeAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const allTypes = await getAllTypes(stateStore);
-		// throw new Error('Not implemented.');
-		console.log("allTypes", allTypes);
+		const typesState = await TypeHandler.getTypesState(stateStore);
+		console.log("dcsdc", typesState);
 		const typeObject = {
-			id: allTypes.length,
+			id: typesState.registeredTypesCount,
 			nftProperties: asset.nftProperties,
             name: asset.name,
             maxSupply: asset.maxSupply,
             allowedAccessorTypes: asset.allowedAccessorTypes,
         };
-        allTypes.push(typeObject);
-        await setAllTypes(stateStore, allTypes);
+
+        await TypeHandler.addNewType(stateStore, typeObject.id,  typeObject);
 	}
 }
