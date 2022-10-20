@@ -1,3 +1,4 @@
+import {StateStore} from "lisk-sdk";
 const {codec} = require("lisk-sdk");
 import * as Schemas from "./schemas";
 
@@ -80,26 +81,16 @@ export const getTypeAsJson = async (dataAccess, typeId) => {
 }
 
 export const addNewType = async (stateStore, typeId, typeObject) => {
-    const typesState = await getTypesState(stateStore);
-    if (!typesState) {
-        return undefined;
-    }
-    if (typeId > typesState.registeredTypesCount) {
-        throw new Error("Type ID is too high");
-    }
     await stateStore.chain.set(
         Schemas.CHAIN_STATE_TYPE_PREFIX + typeId,
         codec.encode(Schemas.typeSchema, typeObject)
     );
-    typesState.registeredTypesCount += 1;
-    // delete typesState.registeredTypesCount;
-    let x = {
-        registeredTypesCount: typesState.registeredTypesCount,
-    }
+    return true;
+}
+export const setTypesState = async (stateStore: StateStore, typesState: any) => {
     await stateStore.chain.set(
         Schemas.CHAIN_STATE_TYPES,
-        codec.encode(Schemas.typesStateStoreSchema, x)
+        codec.encode(Schemas.typesStateStoreSchema, typesState)
     );
-    console.log("typesStateBuffer", typesState, codec.encode(Schemas.typesStateStoreSchema, x));
     return true;
 }

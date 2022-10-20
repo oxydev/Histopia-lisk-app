@@ -82,5 +82,9 @@ export class AddTypeAsset extends BaseAsset {
         };
 
         await TypeHandler.addNewType(stateStore, typeObject.id,  typeObject);
+		typesState.registeredTypesCount += 1;
+		console.log("dcsdc2", typesState);
+
+		await TypeHandler.setTypesState(stateStore, typesState);
 	}
 }
