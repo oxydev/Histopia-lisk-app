@@ -1,19 +1,23 @@
 import {StateStore} from "lisk-sdk";
 const {codec} = require("lisk-sdk");
-import * as Schemas from "./schemas";
-
+const {
+    typesStateStoreSchema,
+    CHAIN_STATE_TYPES,
+    CHAIN_STATE_TYPE_PREFIX,
+    typeSchema
+} = require("./schemas");
 
 export const getTypesState = async (stateStore) => {
-    const typesStateBuffer = stateStore.chain.get(
-        Schemas.CHAIN_STATE_TYPES
+    const typesStateBuffer = await stateStore.chain.get(
+        CHAIN_STATE_TYPES
     );
     if (!typesStateBuffer) {
         return {
-            registeredTypesCount: 10,
+            registeredTypesCount: 0,
         };
     }
      let typesState = codec.decode(
-        Schemas.typesStateStoreSchema,
+        typesStateStoreSchema,
         typesStateBuffer
     );
     console.log("typesStateBuffer", typesState);
@@ -21,76 +25,81 @@ export const getTypesState = async (stateStore) => {
 }
 
 export const getTypesStateAsJson = async (dataAccess) => {
-    const typesStateBuffer = dataAccess.getChainState(
-        Schemas.CHAIN_STATE_TYPES
+    const typesStateBuffer = await dataAccess.getChainState(
+        CHAIN_STATE_TYPES
     );
     if (!typesStateBuffer) {
-        return 100;
+        return 0;
     }
 
-    const typesState = codec.decode(
-        Schemas.typesStateStoreSchema,
+    const typesState = codec.decode(typesStateStoreSchema,
         typesStateBuffer
     );
-    console.log("typesStateBuffer", typesState);
+    // console.log("typesStateBuffer", typesState);
 
     return typesState.registeredTypesCount;
 }
 
-
 export const getType = async (stateStore, typeId) => {
     const typesState = await getTypesState(stateStore);
-    if (!typesState) {
-        return undefined;
+    // console.log("getting type", typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
+
+    if (typesState == undefined) {
+        throw new Error("No types registered");
     }
     if (typeId > typesState.registeredTypesCount) {
-        return undefined;
+        throw new Error("invalid type id "+typeId);
     }
     const registeredTypeBuffer = await stateStore.chain.get(
-        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId
+        CHAIN_STATE_TYPE_PREFIX + typeId
     );
     if (!registeredTypeBuffer) {
         return undefined;
     }
     return codec.decode(
-        Schemas.typeSchema,
+        typeSchema,
         registeredTypeBuffer
     );
 }
 
-export const getTypeAsJson = async (dataAccess, typeId) => {
+export const getTypeAsJson = async (dataAccess, args) => {
     const typesState = await getTypesStateAsJson(dataAccess);
-    if (!typesState) {
-        return undefined;
+    // console.log("getting type", args.typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
+
+    if (typesState == undefined) {
+        throw new Error("No types registered");
     }
-    if (typeId > typesState.registeredTypesCount) {
-        return undefined;
+    if (args.typeId > typesState.registeredTypesCount) {
+        throw new Error("invalid type id "+args.typeId);
     }
     const registeredTypeBuffer = await dataAccess.getChainState(
-        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId
+        CHAIN_STATE_TYPE_PREFIX + args.typeId
     );
     if (!registeredTypeBuffer) {
-        return undefined;
+        throw new Error("No type registered with id "+args.typeId);
     }
+    // console.log("registeredTypeBuffer", registeredTypeBuffer);
     return codec.toJSON(
-        Schemas.typeSchema,
+        typeSchema,
         codec.decode(
-            Schemas.typeSchema,
+            typeSchema,
             registeredTypeBuffer
         ));
 }
 
 export const addNewType = async (stateStore, typeId, typeObject) => {
     await stateStore.chain.set(
-        Schemas.CHAIN_STATE_TYPE_PREFIX + typeId,
-        codec.encode(Schemas.typeSchema, typeObject)
+        CHAIN_STATE_TYPE_PREFIX + typeId,
+        codec.encode(typeSchema, typeObject)
     );
     return true;
 }
+
 export const setTypesState = async (stateStore: StateStore, typesState: any) => {
+    console.log("setTypesState", typesState, typesStateStoreSchema, CHAIN_STATE_TYPES);
     await stateStore.chain.set(
-        Schemas.CHAIN_STATE_TYPES,
-        codec.encode(Schemas.typesStateStoreSchema, typesState)
+        CHAIN_STATE_TYPES,
+        codec.encode(typesStateStoreSchema, typesState)
     );
     return true;
 }

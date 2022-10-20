@@ -1,6 +1,7 @@
 import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
-import {getAllTypes, setAllTypes} from "../typeHandler";
-import {getAllNFTs} from "../nftHandler";
+import * as TypeHandler from "../typeHandler";
+import * as NftHandler from "../nftHandler";
+import {setNftState} from "../nftHandler";
 
 export class MintNFTAsset extends BaseAsset {
     public name = 'mintNFT';
@@ -25,23 +26,40 @@ export class MintNFTAsset extends BaseAsset {
     };
 
     public validate({asset}: ValidateAssetContext<{}>): void {
-
+        // Validate your asset
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     public async apply({asset, transaction, stateStore}: ApplyAssetContext<{}>): Promise<void> {
-        const allNfts = await getAllNFTs(stateStore);
-        // throw new Error('Not implemented.');
-        let typeObject = await stateStore.chain.get(`nftType:${asset.typeId}`);
+        let nftsState = await NftHandler.getNFTsState(stateStore);
 
+        let nftProperties = await this.generateNftProperties(stateStore, asset.typeId);
+        console.log("nftProperties", nftProperties);
         const nftObject = {
-            id: allNfts.length + 1,
-            nftProperties: asset.nftProperties,
-            name: asset.name,
-            maxSupply: asset.maxSupply,
-            allowedAccessorTypes: asset.allowedAccessorTypes,
+            id: nftsState.registeredNFTsCount + 1,
+            typeId: asset.typeId,
+            ownerAddress: asset.to,
+            nftProperties: nftProperties,
         };
-        allTypes.push(typeObject);
-        await setAllTypes(stateStore, allTypes);
+
+        await NftHandler.addNewNFT(stateStore, nftObject);
+        nftsState.registeredNFTsCount += 1;
+        await NftHandler.setNftState(stateStore, nftsState);
+    }
+
+    private async generateNftProperties(stateStore, typeId) {
+        let type = await TypeHandler.getType(stateStore, typeId);
+        if (type === undefined) {
+            throw new Error("Type not found");
+        }
+        let nftProperties = [];
+        for (let i = 0; i < type.nftProperties.length; i++) {
+            let property = type.nftProperties[i];
+            nftProperties.push({
+                name: property.name,
+                amount: Math.floor(Math.random() * (property.maximum - property.minimum + 1)) + property.minimum
+            })
+        }
+        return nftProperties;
     }
 }

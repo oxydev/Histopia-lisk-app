@@ -11,6 +11,7 @@ import {
 import {AddTypeAsset} from "./assets/add_type_asset";
 import {MintNFTAsset} from "./assets/mint_n_f_t_asset";
 import * as TypeHandler from './typeHandler';
+import * as NftHandler from './nftHandler';
 
 export class HistopianftModule extends BaseModule {
     public actions = {
@@ -20,6 +21,12 @@ export class HistopianftModule extends BaseModule {
         getTypesState: async () => {
             return TypeHandler.getTypesStateAsJson(this._dataAccess);
         },
+        getNfTsState: async () => {
+            return NftHandler.getNFTsStateAsJson(this._dataAccess);
+        },
+        getNfT: async (nftId) => {
+            return NftHandler.getNFTAsJson(this._dataAccess, nftId);
+        }
         // getAllNFTs: async () => {
         //     return getAllNFTsAsJSON(this._dataAccess)
         // }

@@ -1,10 +1,11 @@
 // This key is used to save the data for the hello counter in the database
-export const CHAIN_STATE_NFT_TOKEN = "nft:registeredNFTToken";
-export const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
-export const CHAIN_STATE_TYPES = "nft:typesStateStore";
+ const CHAIN_STATE_NFTS = "nft:registeredNftsStateStore";
+ const CHAIN_STATE_NFT_PREFIX = "nft:registeredNFTToken";
+ const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
+ const CHAIN_STATE_TYPES = "nft:typesStateStore";
 
 
-export const typesStateStoreSchema = {
+ const typesStateStoreSchema = {
     $id: "lisk/Histopia/nft/typesStateStore",
     type: "object",
     required: ["registeredTypesCount"],
@@ -16,7 +17,7 @@ export const typesStateStoreSchema = {
     }
 }
 
-export const typeSchema = {
+ const typeSchema = {
     $id: "lisk/Histopia/nft/types",
     type: "object",
     required: ["id", "nftProperties", "name", "allowedAccessorTypes", "maxSupply"],
@@ -63,10 +64,22 @@ export const typeSchema = {
     }
 }
 
-export const nftTokenSchema = {
+const nftsStateStoreSchema = {
+    $id: "lisk/Histopia/nft/nftsStateStore",
+    type: "object",
+    required: ["registeredNFTsCount"],
+    properties: {
+        registeredNFTsCount: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        }
+    }
+}
+
+ const nftTokenSchema = {
     $id: "lisk/Histopia/nft/tokens",
     type: "object",
-    required: ["id", "typeId", "ownerAddress", "minPurchaseMargin", "value", "properties"],
+    required: ["id", "typeId", "ownerAddress", "nftProperties"],
     properties: {
         id: {
             dataType: "uint32",
@@ -82,6 +95,7 @@ export const nftTokenSchema = {
         },
         nftProperties: {
             type: "array",
+            fieldNumber: 4,
             items: {
                 type: "object",
                 required: ["name", "amount"],
@@ -99,3 +113,14 @@ export const nftTokenSchema = {
         }
     }
 }
+
+module.exports = {
+    typesStateStoreSchema,
+    CHAIN_STATE_TYPES,
+    nftTokenSchema,
+    CHAIN_STATE_NFTS,
+    CHAIN_STATE_NFT_PREFIX,
+    CHAIN_STATE_TYPE_PREFIX,
+    typeSchema,
+    nftsStateStoreSchema
+};

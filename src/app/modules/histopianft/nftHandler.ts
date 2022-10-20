@@ -1,52 +1,103 @@
 const { codec } = require("lisk-sdk");
-const { CHAIN_STATE_NFT_TOKENS, nftTokensSchema } = require("./schemas");
+const {
+    nftTokenSchema,
+    CHAIN_STATE_NFTS,
+    CHAIN_STATE_NFT_PREFIX,
+    nftsStateStoreSchema
+} = require("./schemas");
 
-// const CHAIN_STATE_NFT_TOKENS = "nft:registeredNFTTokens";
-// const CHAIN_STATE_NFT_TYPES = "nft:registeredNFTTypes";
-
-
-export const getAllNFTs = async (stateStore) => {
-    const registeredNFTsBuffer = await stateStore.chain.get(
-        CHAIN_STATE_NFT_TOKENS
+export const getNFTsState = async (stateStore) => {
+    const nftsStateBuffer = await stateStore.chain.get(
+        CHAIN_STATE_NFTS
     );
-    if (!registeredNFTsBuffer) {
-        return [];
+    if (!nftsStateBuffer) {
+        return {
+            registeredNFTsCount: 0,
+        };
     }
-
-    const registeredTokens = codec.decode(
-        nftTokensSchema,
-        registeredNFTsBuffer
+    let nftsState = codec.decode(
+        nftsStateStoreSchema,
+        nftsStateBuffer
     );
-
-    return registeredTokens.registeredNFTTokens;
+    console.log("nftsStateBuffer", nftsState);
+    return nftsState;
 }
 
-
-export const getAllNFTsAsJSON = async (dataAccess) => {
-    const registeredNFTsBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_NFT_TOKENS
+export const getNFTsStateAsJson = async (dataAccess) => {
+    console.log("getNFTsStateAsJson", CHAIN_STATE_NFTS);
+    const nftsStateBuffer = await dataAccess.getChainState(
+        CHAIN_STATE_NFTS
     );
-
-    if (!registeredNFTsBuffer) {
-        return [];
+    console.log("nftsStateBuffer", nftsStateBuffer);
+    if (!nftsStateBuffer) {
+        return 100;
     }
 
-    const registeredTokens = codec.decode(
-        nftTokensSchema,
-        registeredNFTsBuffer
+    const nftsState = codec.decode(nftsStateStoreSchema,
+        nftsStateBuffer
     );
+    // console.log("nftsStateBuffer", nftsState);
 
-     return codec.toJSON(nftTokensSchema, registeredTokens)
-        .registeredNFTTokens;
-};
+    return nftsState.registeredNFTsCount;
+}
 
-export const setAllNfts = async (stateStore, nfts) => {
-    const registeredNfts = {
-        registeredTypes: nfts.sort((a, b) => a.id > b.id),
-    };
+export const getNFT = async (stateStore, nftId) => {
+    const nftsState = await getNFTsState(stateStore);
+    // console.log("getting type", typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
 
+    if (nftsState == undefined) {
+        throw new Error("No nfts registered");
+    }
+    if (nftId > nftsState.registeredNFTsCount) {
+        throw new Error("invalid nft id "+nftId);
+    }
+    const registeredNFTBuffer = await stateStore.chain.get(
+        CHAIN_STATE_NFT_PREFIX + nftId
+    );
+    if (!registeredNFTBuffer) {
+        return undefined;
+    }
+    return codec.decode(
+        nftTokenSchema,
+        registeredNFTBuffer
+    );
+}
+
+export const getNFTAsJson = async (dataAccess, args) => {
+    const nftsState = await getNFTsStateAsJson(dataAccess);
+    // console.log("getting type", typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
+
+    if (nftsState == undefined) {
+        throw new Error("No nfts registered");
+    }
+    if (args.nftId > nftsState.registeredNFTsCount) {
+        throw new Error("invalid nft id "+args.nftId);
+    }
+    const registeredNFTBuffer = await dataAccess.getChainState(
+        CHAIN_STATE_NFT_PREFIX + args.nftId
+    );
+    if (!registeredNFTBuffer) {
+        return undefined;
+    }
+    return codec.decode(
+        nftTokenSchema,
+        registeredNFTBuffer
+    );
+}
+
+export const addNewNFT = async (stateStore, newNFT) => {
     await stateStore.chain.set(
-        CHAIN_STATE_NFT_TOKENS,
-        codec.encode(nftTokensSchema, registeredNfts)
+        CHAIN_STATE_NFT_PREFIX + newNFT.id,
+        codec.encode(nftTokenSchema, newNFT)
+    );
+}
+
+export const setNftState = async (stateStore, newTypesState) => {
+    console.log("setNftState", newTypesState);
+    console.log("setNftState", CHAIN_STATE_NFTS);
+    console.log("setNftState", nftsStateStoreSchema);
+    await stateStore.chain.set(
+        CHAIN_STATE_NFTS,
+        codec.encode(nftsStateStoreSchema, newTypesState)
     );
 }
