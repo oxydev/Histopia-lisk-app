@@ -110,6 +110,10 @@ const nftsStateStoreSchema = {
                     }
                 }
             }
+        },
+        locked: {
+            dataType: "boolean",
+            fieldNumber: 5,
         }
     }
 }

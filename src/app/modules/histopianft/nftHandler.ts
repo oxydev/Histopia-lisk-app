@@ -24,11 +24,9 @@ export const getNFTsState = async (stateStore) => {
 }
 
 export const getNFTsStateAsJson = async (dataAccess) => {
-    console.log("getNFTsStateAsJson", CHAIN_STATE_NFTS);
     const nftsStateBuffer = await dataAccess.getChainState(
         CHAIN_STATE_NFTS
     );
-    console.log("nftsStateBuffer", nftsStateBuffer);
     if (!nftsStateBuffer) {
         return 100;
     }
@@ -79,23 +77,22 @@ export const getNFTAsJson = async (dataAccess, args) => {
     if (!registeredNFTBuffer) {
         return undefined;
     }
-    return codec.decode(
+    let data = codec.decode(
         nftTokenSchema,
         registeredNFTBuffer
     );
+    data.ownerAddress = data.ownerAddress.toString("hex", 0, 20);
+    return data;
 }
 
-export const addNewNFT = async (stateStore, newNFT) => {
+export const setNFTState = async (stateStore,nftId , nftData) => {
     await stateStore.chain.set(
-        CHAIN_STATE_NFT_PREFIX + newNFT.id,
-        codec.encode(nftTokenSchema, newNFT)
+        CHAIN_STATE_NFT_PREFIX + nftId,
+        codec.encode(nftTokenSchema, nftData)
     );
 }
 
-export const setNftState = async (stateStore, newTypesState) => {
-    console.log("setNftState", newTypesState);
-    console.log("setNftState", CHAIN_STATE_NFTS);
-    console.log("setNftState", nftsStateStoreSchema);
+export const setNFTsState = async (stateStore, newTypesState) => {
     await stateStore.chain.set(
         CHAIN_STATE_NFTS,
         codec.encode(nftsStateStoreSchema, newTypesState)

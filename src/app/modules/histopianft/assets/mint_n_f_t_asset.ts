@@ -1,29 +1,14 @@
 import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
 import * as TypeHandler from "../typeHandler";
 import * as NftHandler from "../nftHandler";
-import {setNftState} from "../nftHandler";
+import {mintNFTSchema} from "./assetsSchemas";
 
 export class MintNFTAsset extends BaseAsset {
     public name = 'mintNFT';
     public id = 1;
 
     // Define schema for asset
-    public schema = {
-        $id: 'histopianft/mintNFT-asset',
-        title: 'MintNFTAsset transaction asset for histopianft module',
-        type: 'object',
-        required: [],
-        properties: {
-            to: {
-                dataType: 'bytes',
-                fieldNumber: 1,
-            },
-            typeId: {
-                dataType: 'uint32',
-                fieldNumber: 2,
-            }
-        },
-    };
+    public schema = mintNFTSchema
 
     public validate({asset}: ValidateAssetContext<{}>): void {
         // Validate your asset
@@ -34,17 +19,19 @@ export class MintNFTAsset extends BaseAsset {
         let nftsState = await NftHandler.getNFTsState(stateStore);
 
         let nftProperties = await this.generateNftProperties(stateStore, asset.typeId);
-        console.log("nftProperties", nftProperties);
+
+        console.log('mint nft ', nftsState.registeredNFTsCount + 1);
         const nftObject = {
             id: nftsState.registeredNFTsCount + 1,
             typeId: asset.typeId,
             ownerAddress: asset.to,
             nftProperties: nftProperties,
+            locked: false
         };
 
-        await NftHandler.addNewNFT(stateStore, nftObject);
+        await NftHandler.setNFTState(stateStore,  nftObject.id, nftObject);
         nftsState.registeredNFTsCount += 1;
-        await NftHandler.setNftState(stateStore, nftsState);
+        await NftHandler.setNFTsState(stateStore, nftsState);
     }
 
     private async generateNftProperties(stateStore, typeId) {
