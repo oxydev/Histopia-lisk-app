@@ -1,127 +1,149 @@
 // This key is used to save the data for the hello counter in the database
-const CHAIN_STATE_NFT_TOKENS = "nft:registeredNFTTokens";
-const CHAIN_STATE_NFT_TYPES = "nft:registeredNFTTypes";
-const CHAIN_STATE_TYPES = "nft:typesStateStore";
+const CHAIN_STATE_SYSTEM = "nft:registeredNftsStateStore";
+const CHAIN_STATE_ACCOUNT_PREFIX = "nft:registeredAccount:";
+const CHAIN_STATE_ACCOUNT_NFT_PREFIX = "nft:account:nft:";
+const CHAIN_STATE_NFT_PREFIX = "nft:registeredNFTToken:";
+const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
 
-const typesStateStoreSchema = {
-    $id: "lisk/Histopia/nft/typesStateStore",
-    type: "object",
-    required: ["registeredTypesCount"],
-    properties: {
-        registeredTypesCount: {
-            dataType: "uint32",
-            fieldNumber: 1,
-        }
-    }
-}
 
-const typesSchema = {
+ const typeSchema = {
     $id: "lisk/Histopia/nft/types",
     type: "object",
+    required: ["id", "nftProperties", "name", "allowedAccessorTypes", "maxSupply"],
+
     properties: {
-        registeredTypes: {
-            type: "array",
+        id: {
+            dataType: "uint32",
             fieldNumber: 1,
+        },
+        nftProperties: {
+            type: "array",
             items: {
                 type: "object",
+                required: ["name", "minimum", "maximum"],
                 properties: {
-                    id: {
-                        dataType: "uint32",
-                        fieldNumber: 1,
-                    },
-                    nftProperties: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            required: ["name", "minimum", "maximum"],
-                            properties: {
-                                name: {
-                                    dataType: "string",
-                                    fieldNumber: 1,
-                                },
-                                minimum: {
-                                    dataType: "uint32",
-                                    fieldNumber: 2,
-                                },
-                                maximum: {
-                                    dataType: "uint32",
-                                    fieldNumber: 3,
-                                }
-                            }
-                        },
-                        fieldNumber: 2,
-                    },
                     name: {
                         dataType: "string",
+                        fieldNumber: 1,
+                    },
+                    minimum: {
+                        dataType: "uint32",
+                        fieldNumber: 2,
+                    },
+                    maximum: {
+                        dataType: "uint32",
                         fieldNumber: 3,
-                    },
-                    maxSupply: {
-                        dataType: "uint32",
-                        fieldNumber: 4,
-                    },
-                    allowedAccessorTypes: {
-                        dataType: "uint32",
-                        fieldNumber: 5,
                     }
                 }
-            }
+            },
+            fieldNumber: 2,
+        },
+        name: {
+            dataType: "string",
+            fieldNumber: 3,
+        },
+        maxSupply: {
+            dataType: "uint32",
+            fieldNumber: 4,
+        },
+        allowedAccessorTypes: {
+            dataType: "uint32",
+            fieldNumber: 5,
+        },
+    }
+}
+
+const systemStateStoreSchema = {
+    $id: "lisk/Histopia/nft/nftsStateStore",
+    type: "object",
+    required: ["registeredNFTsCount","mintFee","registeredTypesCount" , "ownerAddress"],
+    properties: {
+        registeredNFTsCount: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        },
+        registeredTypesCount: {
+            dataType: "uint32",
+            fieldNumber: 2,
+        },
+        mintFee: {
+            dataType: "uint64",
+            fieldNumber: 3,
+        },
+        ownerAddress: {
+            dataType: "bytes",
+            fieldNumber: 4,
         }
     }
 }
 
-const nftTokensSchema = {
+ const nftTokenSchema = {
     $id: "lisk/Histopia/nft/tokens",
     type: "object",
-    required: ["registeredNFTTokens"],
+    required: ["id", "typeId", "ownerAddress", "nftProperties"],
     properties: {
-        registeredNFTTokens: {
-            type: "array",
+        id: {
+            dataType: "uint32",
             fieldNumber: 1,
+        },
+        typeId: {
+            dataType: "uint32",
+            fieldNumber: 2,
+        },
+        ownerAddress: {
+            dataType: "bytes",
+            fieldNumber: 3,
+        },
+        nftProperties: {
+            type: "array",
+            fieldNumber: 4,
             items: {
                 type: "object",
-                required: ["id", "typeId", "ownerAddress", "minPurchaseMargin", "value", "properties"],
+                required: ["name", "amount"],
                 properties: {
-                    id: {
-                        dataType: "uint32",
+                    name: {
+                        dataType: "string",
                         fieldNumber: 1,
                     },
-                    typeId: {
+                    amount: {
                         dataType: "uint32",
                         fieldNumber: 2,
-                    },
-                    ownerAddress: {
-                        dataType: "bytes",
-                        fieldNumber: 3,
-                    },
-                    nftProperties: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            required: ["name", "amount"],
-                            properties: {
-                                name: {
-                                    dataType: "string",
-                                    fieldNumber: 1,
-                                },
-                                amount: {
-                                    dataType: "uint32",
-                                    fieldNumber: 2,
-                                }
-                            }
-                        }
                     }
                 }
             }
+        },
+        locked: {
+            dataType: "boolean",
+            fieldNumber: 5,
+        }
+    }
+}
+
+
+const accountStateSchema = {
+    $id: "lisk/Histopia/nft/accountState",
+    type: "object",
+    required: [],
+    properties: {
+        mintedNFTCount: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        },
+        ownedNFTCount: {
+            dataType: "uint32",
+            fieldNumber: 2,
         }
     }
 }
 
 
 module.exports = {
-    CHAIN_STATE_NFT_TOKENS,
-    CHAIN_STATE_NFT_TYPES,
-    typesSchema,
-    nftTokensSchema,
-    typesStateStoreSchema,
-    CHAIN_STATE_TYPES
+    CHAIN_STATE_SYSTEM,
+    nftTokenSchema,
+    CHAIN_STATE_NFT_PREFIX,
+    CHAIN_STATE_TYPE_PREFIX,
+    typeSchema,
+    systemStateStoreSchema,
+    accountStateSchema,
+    CHAIN_STATE_ACCOUNT_PREFIX,
 };
