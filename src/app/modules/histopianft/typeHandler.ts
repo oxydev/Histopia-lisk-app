@@ -1,47 +1,12 @@
-import {StateStore} from "lisk-sdk";
 const {codec} = require("lisk-sdk");
 const {
-    typesStateStoreSchema,
-    CHAIN_STATE_TYPES,
     CHAIN_STATE_TYPE_PREFIX,
     typeSchema
 } = require("./schemas");
-
-export const getTypesState = async (stateStore) => {
-    const typesStateBuffer = await stateStore.chain.get(
-        CHAIN_STATE_TYPES
-    );
-    if (!typesStateBuffer) {
-        return {
-            registeredTypesCount: 0,
-        };
-    }
-     let typesState = codec.decode(
-        typesStateStoreSchema,
-        typesStateBuffer
-    );
-    console.log("typesStateBuffer", typesState);
-    return typesState;
-}
-
-export const getTypesStateAsJson = async (dataAccess) => {
-    const typesStateBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_TYPES
-    );
-    if (!typesStateBuffer) {
-        return 0;
-    }
-
-    const typesState = codec.decode(typesStateStoreSchema,
-        typesStateBuffer
-    );
-    // console.log("typesStateBuffer", typesState);
-
-    return typesState.registeredTypesCount;
-}
+import {getSystemState, getSystemStateAsJson} from "./nftHandler";
 
 export const getType = async (stateStore, typeId) => {
-    const typesState = await getTypesState(stateStore);
+    const typesState = await getSystemState(stateStore);
     // console.log("getting type", typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
 
     if (typesState == undefined) {
@@ -63,7 +28,7 @@ export const getType = async (stateStore, typeId) => {
 }
 
 export const getTypeAsJson = async (dataAccess, args) => {
-    const typesState = await getTypesStateAsJson(dataAccess);
+    const typesState = await getSystemStateAsJson(dataAccess);
     // console.log("getting type", args.typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
 
     if (typesState == undefined) {
@@ -91,15 +56,6 @@ export const addNewType = async (stateStore, typeId, typeObject) => {
     await stateStore.chain.set(
         CHAIN_STATE_TYPE_PREFIX + typeId,
         codec.encode(typeSchema, typeObject)
-    );
-    return true;
-}
-
-export const setTypesState = async (stateStore: StateStore, typesState: any) => {
-    console.log("setTypesState", typesState, typesStateStoreSchema, CHAIN_STATE_TYPES);
-    await stateStore.chain.set(
-        CHAIN_STATE_TYPES,
-        codec.encode(typesStateStoreSchema, typesState)
     );
     return true;
 }

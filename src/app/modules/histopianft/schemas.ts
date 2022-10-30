@@ -1,21 +1,10 @@
 // This key is used to save the data for the hello counter in the database
- const CHAIN_STATE_NFTS = "nft:registeredNftsStateStore";
- const CHAIN_STATE_NFT_PREFIX = "nft:registeredNFTToken";
- const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
- const CHAIN_STATE_TYPES = "nft:typesStateStore";
+const CHAIN_STATE_SYSTEM = "nft:registeredNftsStateStore";
+const CHAIN_STATE_ACCOUNT_PREFIX = "nft:registeredAccount:";
+const CHAIN_STATE_ACCOUNT_NFT_PREFIX = "nft:account:nft:";
+const CHAIN_STATE_NFT_PREFIX = "nft:registeredNFTToken:";
+const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
 
-
- const typesStateStoreSchema = {
-    $id: "lisk/Histopia/nft/typesStateStore",
-    type: "object",
-    required: ["registeredTypesCount"],
-    properties: {
-        registeredTypesCount: {
-            dataType: "uint32",
-            fieldNumber: 1,
-        }
-    }
-}
 
  const typeSchema = {
     $id: "lisk/Histopia/nft/types",
@@ -60,18 +49,30 @@
         allowedAccessorTypes: {
             dataType: "uint32",
             fieldNumber: 5,
-        }
+        },
     }
 }
 
-const nftsStateStoreSchema = {
+const systemStateStoreSchema = {
     $id: "lisk/Histopia/nft/nftsStateStore",
     type: "object",
-    required: ["registeredNFTsCount"],
+    required: ["registeredNFTsCount","mintFee","registeredTypesCount" , "ownerAddress"],
     properties: {
         registeredNFTsCount: {
             dataType: "uint32",
             fieldNumber: 1,
+        },
+        registeredTypesCount: {
+            dataType: "uint32",
+            fieldNumber: 2,
+        },
+        mintFee: {
+            dataType: "uint64",
+            fieldNumber: 3,
+        },
+        ownerAddress: {
+            dataType: "bytes",
+            fieldNumber: 4,
         }
     }
 }
@@ -118,13 +119,31 @@ const nftsStateStoreSchema = {
     }
 }
 
+
+const accountStateSchema = {
+    $id: "lisk/Histopia/nft/accountState",
+    type: "object",
+    required: [],
+    properties: {
+        mintedNFTCount: {
+            dataType: "uint32",
+            fieldNumber: 1,
+        },
+        ownedNFTCount: {
+            dataType: "uint32",
+            fieldNumber: 2,
+        }
+    }
+}
+
+
 module.exports = {
-    typesStateStoreSchema,
-    CHAIN_STATE_TYPES,
+    CHAIN_STATE_SYSTEM,
     nftTokenSchema,
-    CHAIN_STATE_NFTS,
     CHAIN_STATE_NFT_PREFIX,
     CHAIN_STATE_TYPE_PREFIX,
     typeSchema,
-    nftsStateStoreSchema
+    systemStateStoreSchema,
+    accountStateSchema,
+    CHAIN_STATE_ACCOUNT_PREFIX,
 };

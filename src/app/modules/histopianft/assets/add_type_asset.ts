@@ -1,54 +1,13 @@
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
 import * as TypeHandler from '../typeHandler';
+import {getSystemState, setSystemState} from "../nftHandler";
+import {addTypeSchema} from "./assetsSchemas";
 
 export class AddTypeAsset extends BaseAsset {
 	public name = 'addType';
 	public id = 0;
 
-	// Define schema for asset
-	public schema = {
-		$id: 'histopianft/addType-asset',
-		title: 'AddTypeAsset transaction asset for histopianft module',
-		type: 'object',
-		required: ["name", "maxSupply", "allowedAccessorTypes", "nftProperties"],
-		properties: {
-			name: {
-				dataType: 'string',
-				fieldNumber: 1,
-			},
-			maxSupply: {
-				dataType: 'uint32',
-				fieldNumber: 2,
-			},
-			allowedAccessorTypes: {
-				dataType: 'uint32',
-				fieldNumber: 3,
-			},
-			nftProperties: {
-				type: 'array',
-				fieldNumber: 4,
-				items: {
-					type: 'object',
-					required: ['name', 'minimum', 'maximum'],
-					properties: {
-						name: {
-							dataType: 'string',
-							fieldNumber: 1,
-						},
-						minimum: {
-							dataType: 'uint32',
-							fieldNumber: 2,
-						},
-						maximum: {
-							dataType: 'uint32',
-							fieldNumber: 3,
-						},
-					}
-				}
-			},
-
-		},
-	};
+	public schema = addTypeSchema;
 
 
 	public validate({ asset }): void {
@@ -71,7 +30,11 @@ export class AddTypeAsset extends BaseAsset {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
-		const typesState = await TypeHandler.getTypesState(stateStore);
+		const typesState = await getSystemState(stateStore);
+
+		if (typesState.ownerAddress.toString('hex') !== transaction.senderAddress.toString('hex')) {
+			throw new Error('You are not the owner!');
+		}
 		console.log("dcsdc", typesState);
 		const typeObject = {
 			id: typesState.registeredTypesCount,
@@ -85,6 +48,6 @@ export class AddTypeAsset extends BaseAsset {
 		typesState.registeredTypesCount += 1;
 		console.log("dcsdc2", typesState);
 
-		await TypeHandler.setTypesState(stateStore, typesState);
+		await setSystemState(stateStore, typesState);
 	}
 }

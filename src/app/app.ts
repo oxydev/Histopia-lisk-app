@@ -1,4 +1,4 @@
-import {Application, PartialApplicationConfig} from 'lisk-sdk';
+import {Application, PartialApplicationConfig, utils} from 'lisk-sdk';
 import {registerModules} from './modules';
 import {registerPlugins} from './plugins';
 // const { codec, cryptography } = require("lisk-sdk");
@@ -11,7 +11,8 @@ export const getApplication = (
     // 	'peanut hundred pen hawk invite exclude brain chunk gadget wait wrong ready',
     // 	'some secure password',
     // );
-    // console.log("getApplication", genesisBlock, config.forging.delegates[0]);
+    console.log("getApplication", genesisBlock, config);
+
     const appConfig = {
         ...config,
 
@@ -24,7 +25,7 @@ export const getApplication = (
             	// host: '0.0.0.0',
             	// applicationUrl: 'ws://localhost:8082/ws',
             	// fee: '0.1',
-            	// amount: '10000',
+            	amount: '2600', //2600 * 10^8
             	// tokenPrefix: 'lsk',
             },
 
@@ -44,7 +45,7 @@ export const getApplication = (
         "host": '127.0.0.1'
     }
 
-    console.log("appConfig", appConfig.plugins);
+    // console.log("appConfig", genesisBlock);
     const app = Application.defaultApplication(genesisBlock, appConfig);
 
     registerModules(app);

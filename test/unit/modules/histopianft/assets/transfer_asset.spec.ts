@@ -1,19 +1,19 @@
-import { CreateAsset } from '../../../../../src/app/modules/histopianft/assets/create_asset';
+import { TransferAsset } from '../../../../../src/app/modules/histopianft/assets/transfer_asset';
 
-describe('MintNFTAsset', () => {
-  let transactionAsset: CreateAsset;
+describe('TransferAsset', () => {
+  let transactionAsset: TransferAsset;
 
 	beforeEach(() => {
-		transactionAsset = new CreateAsset();
+		transactionAsset = new TransferAsset();
 	});
 
 	describe('constructor', () => {
 		it('should have valid id', () => {
-			expect(transactionAsset.id).toEqual(1);
+			expect(transactionAsset.id).toEqual(2);
 		});
 
 		it('should have valid name', () => {
-			expect(transactionAsset.name).toEqual('mintNFT');
+			expect(transactionAsset.name).toEqual('transfer');
 		});
 
 		it('should have valid schema', () => {
