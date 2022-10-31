@@ -19,11 +19,12 @@ export class CreateAsset extends BaseAsset {
     // eslint-disable-next-line @typescript-eslint/require-await
     public async apply({asset: {count, to, typeId}, transaction, reducerHandler, stateStore}: ApplyAssetContext<{}>): Promise<void> {
         let nftsState = await NftHandler.getSystemState(stateStore);
-
+        let senderAddress = transaction.senderAddress.toString('hex');
+        let ownerAddress = to.toString('hex');
         // console.log("Minting NFT", nftsState);
         let nftProperties = await this.generateNftProperties(stateStore, typeId);
 
-        let accountState = await getAccountState(stateStore, transaction.senderAddress);
+        let accountState = await getAccountState(stateStore, senderAddress);
         // console.log("Account store", accountState);
         let feeAmount: BigInt = BigInt(nftsState.mintFee) * BigInt(count);
         if (accountState.mintedNFTCount == 0) {
@@ -49,15 +50,15 @@ export class CreateAsset extends BaseAsset {
         accountState.mintedNFTCount += count;
         await NftHandler.setSystemState(stateStore, nftsState);
 
-        await setAccountState(stateStore, transaction.senderAddress, accountState);
 
-        if (to !== transaction.senderAddress) {
-            accountState = await getAccountState(stateStore, to);
+        if (ownerAddress !== senderAddress) {
+            await setAccountState(stateStore, senderAddress, accountState);
+            accountState = await getAccountState(stateStore, ownerAddress);
         }
 
         accountState.ownedNFTCount += count;
         // console.log("Account store", accountState);
-        await setAccountState(stateStore, to, accountState);
+        await setAccountState(stateStore, ownerAddress, accountState);
     }
 
     private async transferAmountToOwner(reducerHandler, amount, senderAddress, ownerAddress) {

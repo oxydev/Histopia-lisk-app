@@ -6,7 +6,7 @@ const {
 
 export const getAccountState = async (stateStore, address) => {
     const accountStateBuffer = await stateStore.chain.get(
-        `${CHAIN_STATE_ACCOUNT_PREFIX}:${address.toString('hex')}`
+        `${CHAIN_STATE_ACCOUNT_PREFIX}:${address}`
     );
     if (!accountStateBuffer) {
         return {
@@ -22,9 +22,11 @@ export const getAccountState = async (stateStore, address) => {
 }
 
 export const getAccountStateAsJson = async (dataAccess, address) => {
+    let account  = address.address;
     const accountStateBuffer = await dataAccess.getChainState(
-        `${CHAIN_STATE_ACCOUNT_PREFIX}:${address}`
+        `${CHAIN_STATE_ACCOUNT_PREFIX}:${account}`
     );
+    console.log("accountStateBuffer", accountStateBuffer, address, account);
     if (!accountStateBuffer) {
         return {
             mintedNFTCount: 0,
@@ -41,6 +43,7 @@ export const getAccountStateAsJson = async (dataAccess, address) => {
 }
 
 export const setAccountState = async (stateStore, address, accountState) => {
+    console.log("setAccountState", address, accountState);
     await stateStore.chain.set(
         `${CHAIN_STATE_ACCOUNT_PREFIX}:${address}`,
         codec.encode(accountStateSchema, accountState)
