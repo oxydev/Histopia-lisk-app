@@ -5,14 +5,14 @@
 	"rootPath": "~/.lisk",
 	"logger": {
 		"fileLogLevel": "info",
-		"consoleLogLevel": "warn",
+		"consoleLogLevel": "info",
 		"logFileName": "lisk.log"
 	},
 	"rpc": {
 		"enable": true,
 		"mode": "ws",
-		"port": 8080,
-		"host": "127.0.0.1"
+		"port": 8081,
+		"host": "0.0.0.0"
 	},
 	"genesisConfig": {
 		"blockTime": 10,

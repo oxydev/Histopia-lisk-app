@@ -23,10 +23,10 @@ export const getApplication = (
                 captchaSitekey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
             	// port: 4004,
             	// host: '0.0.0.0',
-                // applicationUrl: 'ws://localhost:8081/ws',
+                applicationUrl: 'wss://lisk.histopia.io/wss',
             	// fee: '0.1',
             	amount: '2600', //2600 * 10^8
-            	// tokenPrefix: 'ERAsdc',
+            	// tokenPrefix: 'ERA',
             },
 
             dashboard: {
@@ -38,12 +38,12 @@ export const getApplication = (
         }
     }
 
-    appConfig.rpc = {
-        "enable": true,
-        "mode": "ws",
-        "port": 8081,
-        "host": '0.0.0.0'
-    }
+    // appConfig.rpc = {
+    //     "enable": true,
+    //     "mode": "ws",
+    //     "port": 8081,
+    //     "host": '0.0.0.0'
+    // }
 
     // console.log("appConfig", genesisBlock);
     const app = Application.defaultApplication(genesisBlock, appConfig);
