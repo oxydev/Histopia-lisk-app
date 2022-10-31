@@ -8,15 +8,16 @@ import {
     StateStore,
     TransactionApplyContext
 } from 'lisk-sdk';
+import { getAccountStateAsJson} from "./accountHandler";
 import { AddTypeAsset } from "./assets/add_type_asset";
-import {addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema} from "./assets/assetsSchemas";
+import { addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema } from "./assets/assetsSchemas";
 import { CreateAsset } from "./assets/create_asset";
+import { CreateNftAsset } from "./assets/create_nft_asset";
 import { DestroyAsset } from "./assets/destroy_asset";
 import { SetMintFeeAsset } from "./assets/set_mint_fee_asset";
 import { TransferAsset } from "./assets/transfer_asset";
 import * as NftHandler from './nftHandler';
 import * as TypeHandler from './typeHandler';
-import {getAccountState} from "./accountHandler";
 
 export class HistopianftModule extends BaseModule {
     public actions = {
@@ -30,7 +31,7 @@ export class HistopianftModule extends BaseModule {
             return NftHandler.getNFTAsJson(this._dataAccess, nftId);
         },
         getAccountState: async (address) => {
-            return getAccountState(this._dataAccess, address);
+            return getAccountStateAsJson(this._dataAccess, address);
         }
         // getBalance: async (address) => {
         //     return NftHandler.getBalanceAsJson(this._dataAccess, address);
@@ -54,7 +55,8 @@ export class HistopianftModule extends BaseModule {
     };
 
     public name = 'histopianft';
-    public transactionAssets = [new AddTypeAsset(), new CreateAsset(), new DestroyAsset(), new TransferAsset(), new SetMintFeeAsset()];
+
+    public transactionAssets = [new AddTypeAsset(), new CreateAsset(), new DestroyAsset(), new TransferAsset(), new SetMintFeeAsset(), new CreateNftAsset()];
     public events = [
         'newType',
         'newNFT',

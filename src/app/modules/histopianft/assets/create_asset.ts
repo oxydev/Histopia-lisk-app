@@ -13,6 +13,7 @@ export class CreateAsset extends BaseAsset {
 
     public validate({asset}: ValidateAssetContext<{}>): void {
         // Validate your asset
+        console.log("Validating asset", asset);
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
