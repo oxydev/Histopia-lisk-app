@@ -11,7 +11,7 @@
 		"javascript",
 		"typescript"
 	],
-	"homepage": "",
+	"homepage": "/dashboard",
 	"repository": {},
 	"engines": {
 		"node": ">=16.14.1 <=16",
