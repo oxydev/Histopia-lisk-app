@@ -2,7 +2,7 @@ export const mintNFTSchema = {
     $id: 'histopianft/mintNFT-asset',
     title: 'MintNFTAsset transaction asset for histopianft module',
     type: 'object',
-    required: [],
+    required: ["count", "typeId", "to"],
     properties: {
         to: {
             dataType: 'bytes',
