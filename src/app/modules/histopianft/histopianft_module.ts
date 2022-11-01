@@ -163,7 +163,7 @@ export class HistopianftModule extends BaseModule {
                 txnId: _input.transaction._id.toString('hex'),
                 blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
             }
-            this._channel.publish('histopianft:newType', data);
+            this._channel.publish('histopianft:transferNFT', data);
         }
     }
 
