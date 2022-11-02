@@ -7,10 +7,7 @@ export const getApplication = (
     genesisBlock: Record<string, unknown>,
     config: PartialApplicationConfig,
 ): Application => {
-    // const encryptedPassphrase = cryptography.encryptPassphraseWithPassword(
-    // 	'peanut hundred pen hawk invite exclude brain chunk gadget wait wrong ready',
-    // 	'some secure password',
-    // );
+
     console.log("getApplication", genesisBlock, config);
 
     const appConfig = {
