@@ -1,6 +1,6 @@
 import { BaseAsset, ApplyAssetContext, ValidateAssetContext } from 'lisk-sdk';
-import * as TypeHandler from '../typeHandler';
-import {getSystemState, setSystemState} from "../nftHandler";
+import * as TypeHandler from '../StateStoreHandlers/typeHandler';
+import {getSystemState, setSystemState} from "../StateStoreHandlers/nftHandler";
 import {addTypeSchema} from "./assetsSchemas";
 
 export class AddTypeAsset extends BaseAsset {
@@ -11,7 +11,6 @@ export class AddTypeAsset extends BaseAsset {
 
 
 	public validate({ asset }): void {
-		// Validate your asset
 		if (asset.name.length === 0) {
 			throw new Error('Name is too short.');
 		}
@@ -28,14 +27,12 @@ export class AddTypeAsset extends BaseAsset {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async apply({ asset, transaction, stateStore }: ApplyAssetContext<{}>): Promise<void> {
 		const typesState = await getSystemState(stateStore);
 
 		if (typesState.ownerAddress.toString('hex') !== transaction.senderAddress.toString('hex')) {
 			throw new Error('You are not the owner!');
 		}
-		console.log("dcsdc", typesState);
 		const typeObject = {
 			id: typesState.registeredTypesCount,
 			nftProperties: asset.nftProperties,
@@ -46,7 +43,6 @@ export class AddTypeAsset extends BaseAsset {
 
         await TypeHandler.addNewType(stateStore, typeObject.id,  typeObject);
 		typesState.registeredTypesCount += 1;
-		console.log("dcsdc2", typesState);
 
 		await setSystemState(stateStore, typesState);
 	}

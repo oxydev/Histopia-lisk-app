@@ -8,7 +8,7 @@ import {
     StateStore,
     TransactionApplyContext
 } from 'lisk-sdk';
-import { getAccountStateAsJson} from "./accountHandler";
+import { getAccountStateAsJson} from "./StateStoreHandlers/accountHandler";
 import { AddTypeAsset } from "./assets/add_type_asset";
 import { addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema } from "./assets/assetsSchemas";
 import { CreateAsset } from "./assets/create_asset";
@@ -16,8 +16,8 @@ import { CreateNftAsset } from "./assets/create_nft_asset";
 import { DestroyAsset } from "./assets/destroy_asset";
 import { SetMintFeeAsset } from "./assets/set_mint_fee_asset";
 import { TransferAsset } from "./assets/transfer_asset";
-import * as NftHandler from './nftHandler';
-import * as TypeHandler from './typeHandler';
+import * as NftHandler from './StateStoreHandlers/nftHandler';
+import * as TypeHandler from './StateStoreHandlers/typeHandler';
 
 export class HistopianftModule extends BaseModule {
     public actions = {
@@ -56,7 +56,7 @@ export class HistopianftModule extends BaseModule {
 
     public name = 'histopianft';
 
-    public transactionAssets = [new AddTypeAsset(), new CreateAsset(), new DestroyAsset(), new TransferAsset(), new SetMintFeeAsset(), new CreateNftAsset()];
+    public transactionAssets = [new AddTypeAsset(), new CreateAsset(), new DestroyAsset(), new TransferAsset(), new SetMintFeeAsset()];
     public events = [
         'newType',
         'newNFT',
@@ -89,11 +89,7 @@ export class HistopianftModule extends BaseModule {
     }
 
     public async afterTransactionApply(_input: TransactionApplyContext) {
-        // Get any data from stateStore using transaction info, below is an example
-        // const sender = await _input.stateStore.account.getOrDefault<TokenAccount>(_input.transaction.senderAddress);
-
         if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 1) {
-            console.log('New NFT created', _input.stateStore.chain.lastBlockHeaders[0].height);
             let assetBuffer = _input.transaction.asset;
             let asset = codec.decode(
                 mintNFTSchema,

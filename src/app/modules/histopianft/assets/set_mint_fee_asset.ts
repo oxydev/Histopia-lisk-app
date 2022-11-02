@@ -1,5 +1,5 @@
 import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
-import {getSystemState, setSystemState} from "../nftHandler";
+import {getSystemState, setSystemState} from "../StateStoreHandlers/nftHandler";
 
 export class SetMintFeeAsset extends BaseAsset {
     public name = 'setMintFee';

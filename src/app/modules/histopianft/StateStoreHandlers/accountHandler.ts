@@ -12,6 +12,7 @@ export const getAccountState = async (stateStore, address) => {
         return {
             mintedNFTCount: 0,
             ownedNFTCount: 0,
+            ownedNFTs: []
         };
     }
     let accountState = codec.decode(
@@ -26,17 +27,18 @@ export const getAccountStateAsJson = async (dataAccess, address) => {
         return {
             mintedNFTCount: 0,
             ownedNFTCount: 0,
+            ownedNFTs: []
         };
     }
     let account  = address.address;
     const accountStateBuffer = await dataAccess.getChainState(
         `${CHAIN_STATE_ACCOUNT_PREFIX}:${account}`
     );
-    console.log("accountStateBuffer", accountStateBuffer, address, account);
     if (!accountStateBuffer) {
         return {
             mintedNFTCount: 0,
             ownedNFTCount: 0,
+            ownedNFTs: []
         };
     }
     let accountState = codec.decode(
@@ -49,7 +51,6 @@ export const getAccountStateAsJson = async (dataAccess, address) => {
 }
 
 export const setAccountState = async (stateStore, address, accountState) => {
-    console.log("setAccountState", address, accountState);
     await stateStore.chain.set(
         `${CHAIN_STATE_ACCOUNT_PREFIX}:${address}`,
         codec.encode(accountStateSchema, accountState)

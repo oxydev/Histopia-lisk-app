@@ -1,8 +1,8 @@
 import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
-import * as TypeHandler from "../typeHandler";
-import * as NftHandler from "../nftHandler";
+import * as TypeHandler from "../StateStoreHandlers/typeHandler";
+import * as NftHandler from "../StateStoreHandlers/nftHandler";
 import {mintNFTSchema} from "./assetsSchemas";
-import {getAccountState, setAccountState} from "../accountHandler";
+import {getAccountState, setAccountState} from "../StateStoreHandlers/accountHandler";
 
 export class CreateAsset extends BaseAsset {
     public name = 'create';
@@ -13,20 +13,18 @@ export class CreateAsset extends BaseAsset {
 
     public validate({asset}: ValidateAssetContext<{}>): void {
         // Validate your asset
-        console.log("Validating asset", asset);
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     public async apply({asset: {count, to, typeId}, transaction, reducerHandler, stateStore}: ApplyAssetContext<{}>): Promise<void> {
         let nftsState = await NftHandler.getSystemState(stateStore);
+
         let senderAddress = transaction.senderAddress.toString('hex');
         let ownerAddress = to.toString('hex');
-        // console.log("Minting NFT", nftsState);
-        let nftProperties = await this.generateNftProperties(stateStore, typeId);
 
+        let nftProperties = await this.generateNftProperties(stateStore, typeId);
         let accountState = await getAccountState(stateStore, senderAddress);
-        // console.log("Account store", accountState);
         let feeAmount: BigInt = BigInt(nftsState.mintFee) * BigInt(count);
+
         if (accountState.mintedNFTCount == 0) {
             feeAmount = nftsState.mintFee * BigInt(count - 1);
         }
@@ -55,15 +53,13 @@ export class CreateAsset extends BaseAsset {
             await setAccountState(stateStore, senderAddress, accountState);
             accountState = await getAccountState(stateStore, ownerAddress);
         }
-
+        accountState.ownedNFTs.push(...Array.from(Array(count).keys()).map((i) => nftsState.registeredNFTsCount - count + i + 1));
         accountState.ownedNFTCount += count;
-        // console.log("Account store", accountState);
         await setAccountState(stateStore, ownerAddress, accountState);
     }
 
     private async transferAmountToOwner(reducerHandler, amount, senderAddress, ownerAddress) {
         let balance = await reducerHandler.invoke('token:getBalance', {address: senderAddress});
-        // console.log('mint nft1 ', balance);
         if (amount > balance) {
             throw new Error("Not enough balance to mint NFT");
         }

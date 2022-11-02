@@ -132,6 +132,13 @@ const accountStateSchema = {
         ownedNFTCount: {
             dataType: "uint32",
             fieldNumber: 2,
+        },
+        ownedNFTs: {
+            type: "array",
+            fieldNumber: 3,
+            items: {
+                dataType: "uint32",
+            }
         }
     }
 }
