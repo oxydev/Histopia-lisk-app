@@ -1,5 +1,3 @@
-
-
 const { codec } = require("lisk-sdk");
 const {
     nftTokenSchema,
@@ -14,7 +12,6 @@ export const getSystemState = async (stateStore) => {
     );
     if (!nftsStateBuffer) {
         var buf = Buffer.from('442b6935c96882a40304610284afa29371040bca', 'hex');
-        console.log("buf", buf);
 
         return {
             registeredNFTsCount: 0,
@@ -27,7 +24,6 @@ export const getSystemState = async (stateStore) => {
         systemStateStoreSchema,
         nftsStateBuffer
     );
-    // console.log("nftsStateBuffer", nftsState);
     return nftsState;
 }
 
@@ -37,7 +33,6 @@ export const getSystemStateAsJson = async (dataAccess) => {
     );
     if (!nftsStateBuffer) {
         var buf = Buffer.from('442b6935c96882a40304610284afa29371040bca', 'hex');
-        console.log("buf", buf);
         return {
             registeredNFTsCount: 0,
             mintFee: 2500*10**8,
@@ -46,14 +41,12 @@ export const getSystemStateAsJson = async (dataAccess) => {
         };
     }
 
-    // console.log("nftsStateBuffer", nftsState);
 
     let date =  codec.decode(systemStateStoreSchema,
         nftsStateBuffer
     );
 
     date.ownerAddress = date.ownerAddress.toString('hex');
-    console.log("date", date);
     return codec.toJSON(
         systemStateStoreSchema
         ,date);
@@ -61,7 +54,6 @@ export const getSystemStateAsJson = async (dataAccess) => {
 
 export const getNFT = async (stateStore, nftId) => {
     const nftsState = await getSystemState(stateStore);
-    // console.log("getting type", typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
 
     if (nftsState == undefined) {
         throw new Error("No nfts registered");
@@ -94,8 +86,6 @@ export const getNFTAsJson = async (dataAccess, args) => {
         registeredNFTBuffer
     );
     data.ownerAddress = data.ownerAddress.toString("hex");
-    console.log("data", data);
-
     return codec.toJSON(nftTokenSchema, data);
 }
 

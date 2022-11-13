@@ -90,77 +90,91 @@ export class HistopianftModule extends BaseModule {
 
     public async afterTransactionApply(_input: TransactionApplyContext) {
         if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 1) {
-            let assetBuffer = _input.transaction.asset;
-            let asset = codec.decode(
-                mintNFTSchema,
-                assetBuffer
-            );
-            NftHandler.getSystemState(_input.stateStore).then((nftState) => {
-                for (let i = 0; i < asset.count; i++) {
-                    NftHandler.getNFT(_input.stateStore, nftState.registeredNFTsCount - i).then((nft) => {
-                        console.log("nft",nft, nftState.registeredNFTsCount - i, nftState.registeredNFTsCount);
-                        let data = {
-                            id: nftState.registeredNFTsCount - i,
-                            to: asset.to.toString('hex'),
-                            typeId: asset.typeId,
-                            properties: nft.nftProperties,
-                            txnId: _input.transaction._id.toString('hex'),
-                            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
-                        }
-                        // console.log("new nft", data);
-                        this._channel.publish('histopianft:newNFT', data);
-                    })
-                }
-            })
+            this.emitMintEvent(_input);
         } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 0) {
-            let assetBuffer = _input.transaction.asset;
-            let asset = codec.decode(
-                addTypeSchema,
-                assetBuffer
-            );
-            NftHandler.getSystemState(_input.stateStore).then((systemState) => {
-                let typeId = systemState.registeredTypesCount - 1;
-                // console.log("typeId", asset);
-                let data = {
-                    id: typeId,
-                    name: asset.name,
-                    properties: asset.nftProperties,
-                    allowedAccessorTypes: asset.allowedAccessorTypes,
-                    maxSupply: asset.maxSupply,
-                    txnId: _input.transaction._id.toString('hex'),
-                    blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
-                }
-                this._channel.publish('histopianft:newType', data);
-            })
+            this.emitNewTypeEvent(_input);
         } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 2) {
-            let assetBuffer = _input.transaction.asset;
-            let asset = codec.decode(
-                destroyNFTSchema,
-                assetBuffer
-            );
-            let data = {
-                id: asset.nftId,
-                from: _input.transaction.senderAddress.toString('hex'),
-                txnId: _input.transaction._id.toString('hex'),
-                blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
-            }
-            this._channel.publish('histopianft:destroyNFT', data);
+            this.emitDestroyEvent(_input);
         }
         else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 3) {
-            let assetBuffer = _input.transaction.asset;
-            let asset = codec.decode(
-                transferNFTSchema,
-                assetBuffer
-            );
+            this.emitTransferEvent(_input);
+        }
+    }
+
+    private emitTransferEvent(_input: TransactionApplyContext) {
+        let assetBuffer = _input.transaction.asset;
+        let asset = codec.decode(
+            transferNFTSchema,
+            assetBuffer
+        );
+        let data = {
+            id: asset.nftId,
+            from: _input.transaction.senderAddress.toString('hex'),
+            to: asset.to.toString('hex'),
+            txnId: _input.transaction._id.toString('hex'),
+            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+        }
+        this._channel.publish('histopianft:transferNFT', data);
+    }
+
+    private emitDestroyEvent(_input: TransactionApplyContext) {
+        let assetBuffer = _input.transaction.asset;
+        let asset = codec.decode(
+            destroyNFTSchema,
+            assetBuffer
+        );
+        let data = {
+            id: asset.nftId,
+            from: _input.transaction.senderAddress.toString('hex'),
+            txnId: _input.transaction._id.toString('hex'),
+            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+        }
+        this._channel.publish('histopianft:destroyNFT', data);
+    }
+
+    private emitNewTypeEvent(_input: TransactionApplyContext) {
+        let assetBuffer = _input.transaction.asset;
+        let asset = codec.decode(
+            addTypeSchema,
+            assetBuffer
+        );
+        NftHandler.getSystemState(_input.stateStore).then((systemState) => {
+            let typeId = systemState.registeredTypesCount - 1;
             let data = {
-                id: asset.nftId,
-                from: _input.transaction.senderAddress.toString('hex'),
-                to: asset.to.toString('hex'),
+                id: typeId,
+                name: asset.name,
+                properties: asset.nftProperties,
+                allowedAccessorTypes: asset.allowedAccessorTypes,
+                maxSupply: asset.maxSupply,
                 txnId: _input.transaction._id.toString('hex'),
                 blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
             }
-            this._channel.publish('histopianft:transferNFT', data);
-        }
+            this._channel.publish('histopianft:newType', data);
+        })
+    }
+
+    private emitMintEvent(_input: TransactionApplyContext) {
+        let assetBuffer = _input.transaction.asset;
+        let asset = codec.decode(
+            mintNFTSchema,
+            assetBuffer
+        );
+        NftHandler.getSystemState(_input.stateStore).then((nftState) => {
+            for (let i = 0; i < asset.count; i++) {
+                NftHandler.getNFT(_input.stateStore, nftState.registeredNFTsCount - i).then((nft) => {
+                    let data = {
+                        id: nftState.registeredNFTsCount - i,
+                        to: asset.to.toString('hex'),
+                        typeId: asset.typeId,
+                        properties: nft.nftProperties,
+                        txnId: _input.transaction._id.toString('hex'),
+                        blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+                    }
+                    // console.log("new nft", data);
+                    this._channel.publish('histopianft:newNFT', data);
+                })
+            }
+        })
     }
 
     public async afterGenesisBlockApply(_input: AfterGenesisBlockApplyContext) {

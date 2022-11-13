@@ -1,7 +1,5 @@
-// This key is used to save the data for the hello counter in the database
 const CHAIN_STATE_SYSTEM = "nft:registeredNftsStateStore";
 const CHAIN_STATE_ACCOUNT_PREFIX = "nft:registeredAccount:";
-const CHAIN_STATE_ACCOUNT_NFT_PREFIX = "nft:account:nft:";
 const CHAIN_STATE_NFT_PREFIX = "nft:registeredNFTToken:";
 const CHAIN_STATE_TYPE_PREFIX = "nft:registeredNFTTypes";
 

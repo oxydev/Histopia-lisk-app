@@ -5,7 +5,6 @@ import { FaucetPlugin } from '@liskhq/lisk-framework-faucet-plugin';
 import { DashboardPlugin } from '@liskhq/lisk-framework-dashboard-plugin';
 
 export const registerPlugins = (app: Application): void => {
-
     app.registerPlugin(GetAllTypesPlugin);
     app.registerPlugin(HTTPAPIPlugin);
     app.registerPlugin(DashboardPlugin);
