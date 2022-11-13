@@ -33,12 +33,6 @@ export class HistopianftModule extends BaseModule {
         getAccountState: async (address) => {
             return getAccountStateAsJson(this._dataAccess, address);
         }
-        // getBalance: async (address) => {
-        //     return NftHandler.getBalanceAsJson(this._dataAccess, address);
-        // }
-        // getAllNFTs: async () => {
-        //     return getAllNFTsAsJSON(this._dataAccess)
-        // }
     };
     public reducers = {
         // Example below
@@ -170,7 +164,6 @@ export class HistopianftModule extends BaseModule {
                         txnId: _input.transaction._id.toString('hex'),
                         blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
                     }
-                    // console.log("new nft", data);
                     this._channel.publish('histopianft:newNFT', data);
                 })
             }
