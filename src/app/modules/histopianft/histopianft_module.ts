@@ -12,7 +12,6 @@ import { getAccountStateAsJson} from "./StateStoreHandlers/accountHandler";
 import { AddTypeAsset } from "./assets/add_type_asset";
 import { addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema } from "./assets/assetsSchemas";
 import { CreateAsset } from "./assets/create_asset";
-import { CreateNftAsset } from "./assets/create_nft_asset";
 import { DestroyAsset } from "./assets/destroy_asset";
 import { SetMintFeeAsset } from "./assets/set_mint_fee_asset";
 import { TransferAsset } from "./assets/transfer_asset";
@@ -21,8 +20,9 @@ import * as TypeHandler from './StateStoreHandlers/typeHandler';
 
 export class HistopianftModule extends BaseModule {
     public actions = {
-        getType: async (typeId: number) => {
-            return  TypeHandler.getTypeAsJson(this._dataAccess, typeId);
+        getType: async (params: Record<string, unknown>) => {
+            const { id } = params;
+            return  TypeHandler.getTypeAsJson(this._dataAccess, id);
         },
         getSystemState: async () => {
             return  NftHandler.getSystemStateAsJson(this._dataAccess);
@@ -30,7 +30,8 @@ export class HistopianftModule extends BaseModule {
         getNFT: async (nftId) => {
             return NftHandler.getNFTAsJson(this._dataAccess, nftId);
         },
-        getAccountState: async (address) => {
+        getAccountState: async (params: Record<string, unknown>) => {
+            const { address } = params;
             return getAccountStateAsJson(this._dataAccess, address);
         }
     };
@@ -97,14 +98,14 @@ export class HistopianftModule extends BaseModule {
 
     private emitTransferEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let asset = codec.decode(
+        let {nftId, to} = codec.decode(
             transferNFTSchema,
             assetBuffer
         );
         let data = {
-            id: asset.nftId,
+            id: nftId,
             from: _input.transaction.senderAddress.toString('hex'),
-            to: asset.to.toString('hex'),
+            to: to.toString('hex'),
             txnId: _input.transaction._id.toString('hex'),
             blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
         }
@@ -113,14 +114,15 @@ export class HistopianftModule extends BaseModule {
 
     private emitDestroyEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let asset = codec.decode(
+        let {nftId} = codec.decode(
             destroyNFTSchema,
             assetBuffer
         );
+        let { _id } =_input.transaction
         let data = {
-            id: asset.nftId,
+            id: nftId,
             from: _input.transaction.senderAddress.toString('hex'),
-            txnId: _input.transaction._id.toString('hex'),
+            txnId: _id.toString('hex'),
             blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
         }
         this._channel.publish('histopianft:destroyNFT', data);
@@ -128,7 +130,7 @@ export class HistopianftModule extends BaseModule {
 
     private emitNewTypeEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let asset = codec.decode(
+        let {allowedAccessorTypes, maxSupply, name , nftProperties} = codec.decode(
             addTypeSchema,
             assetBuffer
         );
@@ -136,10 +138,10 @@ export class HistopianftModule extends BaseModule {
             let typeId = systemState.registeredTypesCount - 1;
             let data = {
                 id: typeId,
-                name: asset.name,
-                properties: asset.nftProperties,
-                allowedAccessorTypes: asset.allowedAccessorTypes,
-                maxSupply: asset.maxSupply,
+                name,
+                properties: nftProperties,
+                allowedAccessorTypes: allowedAccessorTypes,
+                maxSupply: maxSupply,
                 txnId: _input.transaction._id.toString('hex'),
                 blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
             }
@@ -149,17 +151,17 @@ export class HistopianftModule extends BaseModule {
 
     private emitMintEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let asset = codec.decode(
+        let {count, to, typeId} = codec.decode(
             mintNFTSchema,
             assetBuffer
         );
         NftHandler.getSystemState(_input.stateStore).then((nftState) => {
-            for (let i = 0; i < asset.count; i++) {
+            for (let i = 0; i < count; i++) {
                 NftHandler.getNFT(_input.stateStore, nftState.registeredNFTsCount - i).then((nft) => {
                     let data = {
                         id: nftState.registeredNFTsCount - i,
-                        to: asset.to.toString('hex'),
-                        typeId: asset.typeId,
+                        to: to.toString('hex'),
+                        typeId: typeId,
                         properties: nft.nftProperties,
                         txnId: _input.transaction._id.toString('hex'),
                         blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
