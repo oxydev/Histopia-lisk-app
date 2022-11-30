@@ -1,5 +1,3 @@
-import {CHAIN_STATE_SYSTEM, systemStateStoreSchema} from "../../histopianft/StateStoreHandlers/schemas";
-
 const { codec } = require("lisk-sdk");
 const {
     CHAIN_STATE_FOE,
