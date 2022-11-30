@@ -37,16 +37,17 @@ export class HistopianftModule extends BaseModule {
     };
     public reducers = {
         // Example below
-        getType: async (
-			params: Record<string, unknown>,
-			stateStore: StateStore,
-		): Promise<bigint> => {
-			const { typeId } = params;
-			if (!typeId) {
-                throw new Error('Must provide typeId');
-            }
-            return await TypeHandler.getType(stateStore, typeId);
-		},
+        getNFTData: async (params: Record<string, unknown>, stateStore: StateStore): Promise<any> => {
+            const { nftId } = params;
+            const nft = await NftHandler.getNFT(stateStore, nftId);
+            return nft;
+        },
+        setNFTLockState: async (params: Record<string, unknown>, stateStore: StateStore): Promise<void> => {
+            const { nftId, lockState } = params;
+            const nft = await NftHandler.getNFT(stateStore, nftId);
+            nft.isLocked = lockState;
+            await NftHandler.setNFTState(stateStore, nft)
+        }
     };
 
     public name = 'histopianft';

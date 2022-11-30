@@ -33,7 +33,7 @@ export class TransferAsset extends BaseAsset {
 
         nftData.ownerAddress = asset.to;
 
-        await NftHandler.setNFTState(stateStore, nftData.id, nftData);
+        await NftHandler.setNFTState(stateStore, nftData);
 
         let accountState = await getAccountState(stateStore, senderAddress);
         accountState.ownedNFTCount -= 1;

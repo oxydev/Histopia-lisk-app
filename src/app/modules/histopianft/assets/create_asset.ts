@@ -42,7 +42,7 @@ export class CreateAsset extends BaseAsset {
                 nftProperties: nftProperties,
                 locked: false
             };
-            await NftHandler.setNFTState(stateStore, nftObject.id, nftObject);
+            await NftHandler.setNFTState(stateStore, nftObject);
         }
         nftsState.registeredNFTsCount += count;
         accountState.mintedNFTCount += count;

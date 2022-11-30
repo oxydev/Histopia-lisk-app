@@ -91,9 +91,9 @@ export const getNFTAsJson = async (dataAccess, args) => {
     return codec.toJSON(nftTokenSchema, data);
 }
 
-export const setNFTState = async (stateStore, nftId, nftData) => {
+export const setNFTState = async (stateStore, nftData) => {
     await stateStore.chain.set(
-        CHAIN_STATE_NFT_PREFIX + nftId,
+        CHAIN_STATE_NFT_PREFIX + nftData.id,
         codec.encode(nftTokenSchema, nftData)
     );
 }
