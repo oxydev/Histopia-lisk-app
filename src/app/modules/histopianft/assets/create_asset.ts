@@ -63,13 +63,13 @@ export class CreateAsset extends BaseAsset {
         if (amount > balance) {
             throw new Error("Not enough balance to mint NFT");
         }
-        reducerHandler.invoke('token:debit', {
+        await reducerHandler.invoke('token:debit', {
             address: senderAddress,
             amount: amount,
         });
 
 
-        reducerHandler.invoke('token:credit', {
+        await reducerHandler.invoke('token:credit', {
             address: ownerAddress,
             amount: amount,
         });

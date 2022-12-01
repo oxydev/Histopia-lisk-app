@@ -4,7 +4,15 @@ const {
     FOEStateStoreSchema
 } = require("./schemas");
 
-export const getFOEState = async (stateStore) => {
+export type FOEState = {
+    totalMilitaryPowerAtWar: number,
+    eraPerSecond: number,
+    lastRewardTime: number,
+    generalAccEraPerShare: number,
+    histopianCount: number,
+}
+
+export const getFOEState = async (stateStore) : Promise<FOEState>=> {
     const FOEStateBuffer = await stateStore.chain.get(
         CHAIN_STATE_FOE
     );
@@ -14,6 +22,7 @@ export const getFOEState = async (stateStore) => {
             eraPerSecond: 100000000,
             lastRewardTime: 0,
             generalAccEraPerShare: 0,
+            histopianCount: 0,
         }
     }
     let foeState = codec.decode(
@@ -23,7 +32,7 @@ export const getFOEState = async (stateStore) => {
     return foeState;
 }
 
-export const getFOEStateAsJson = async (dataAccess) => {
+export const getFOEStateAsJson = async (dataAccess): Promise<FOEState> => {
     const foeStateBuffer = await dataAccess.getChainState(
         CHAIN_STATE_FOE
     );
@@ -33,6 +42,7 @@ export const getFOEStateAsJson = async (dataAccess) => {
             eraPerSecond: 100000000,
             lastRewardTime: 0,
             generalAccEraPerShare: 0,
+            histopianCount: 0,
         }
     }
 
@@ -46,7 +56,7 @@ export const getFOEStateAsJson = async (dataAccess) => {
         ,foeState);
 }
 
-export const setFOEState = async (stateStore, newFOEState) => {
+export const setFOEState = async (stateStore, newFOEState: FOEState) => {
     await stateStore.chain.set(
         CHAIN_STATE_FOE,
         codec.encode(FOEStateStoreSchema, newFOEState)

@@ -1,4 +1,12 @@
-import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
+import {BaseAsset, ApplyAssetContext, ValidateAssetContext, ReducerHandler} from 'lisk-sdk';
+import {FOEState, getFOEState, setFOEState} from "../StateStoreHandlers/FOEStateHandler";
+import {calculateMilitaryPower, sendPreviousReward, updatePool} from "../poolHelper";
+import {FOEAccountState, getFOEAccountState, setAccountState} from "../StateStoreHandlers/FOEAccountHandler";
+
+
+export type AssetData = {
+    tokenIds: number[],
+}
 
 export class DepositAsset extends BaseAsset {
     public name = 'deposit';
@@ -9,7 +17,7 @@ export class DepositAsset extends BaseAsset {
         $id: 'foe/deposit-asset',
         title: 'DepositAsset transaction asset for foe module',
         type: 'object',
-        required: [],
+        required: ['tokenIds'],
         properties: {
             tokenIds: {
                 fieldNumber: 1,
@@ -21,19 +29,43 @@ export class DepositAsset extends BaseAsset {
         },
     };
 
-    public validate({asset}: ValidateAssetContext<{}>): void {
+
+
+    public validate({}: ValidateAssetContext<AssetData>): void {
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    public async apply({asset, transaction, stateStore, reducerHandler}: ApplyAssetContext<{}>): Promise<void> {
+    public async apply({asset, transaction, stateStore, reducerHandler}: ApplyAssetContext<AssetData>): Promise<void> {
+        let timestamp = stateStore.chain.lastBlockHeaders[0].timestamp;
+        let FOEState = await getFOEState(stateStore);
+        let updatedFoeState = await updatePool(FOEState, timestamp);
+
         let senderAddress = transaction.senderAddress.toString('hex');
+
+        let userFoeAccountState = await getFOEAccountState(stateStore, senderAddress);
+        if (userFoeAccountState === undefined) {
+            throw new Error('User does not have an account');
+        }
+
+        await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, senderAddress);
+
         let {tokenIds} = asset;
+        let depositingMilitaryPower =  await this.lockDepositedNFTsAndCalculateAddedMilitaryPower(tokenIds, reducerHandler, senderAddress);
+
+        userFoeAccountState.militaryPowerAtWar += depositingMilitaryPower;
+        updatedFoeState.histopianCount += tokenIds.length;
+        updatedFoeState.totalMilitaryPowerAtWar += depositingMilitaryPower;
+        userFoeAccountState.rewardDebt = userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 12;
+        await setAccountState(stateStore, senderAddress, userFoeAccountState);
+        await setFOEState(stateStore, updatedFoeState);
+    }
+
+    private async lockDepositedNFTsAndCalculateAddedMilitaryPower(tokenIds: number[], reducerHandler: ReducerHandler, senderAddress: string) : Promise<number>{
+        let depositingMilitaryPower = 0;
         for (const tokenId of tokenIds) {
             let nftData = await reducerHandler.invoke('histopianft:getNFTData', {
-
                 nftId: tokenId,
             });
-            console.log("DepositAsset.apply", nftData);
             if (nftData === undefined) {
                 throw new Error("NFT not found");
             }
@@ -43,6 +75,19 @@ export class DepositAsset extends BaseAsset {
             if (nftData.locked === true) {
                 throw new Error("NFT is already locked");
             }
+            depositingMilitaryPower += calculateMilitaryPower(nftData);
+            let isLocked = await reducerHandler.invoke('histopianft:setNFTLockState', {
+                nftId: tokenId,
+                locked: true,
+            });
+            if (!isLocked) {
+                throw new Error("NFT could not be locked");
+            }
         }
+        return depositingMilitaryPower;
     }
+
+
 }
+
+

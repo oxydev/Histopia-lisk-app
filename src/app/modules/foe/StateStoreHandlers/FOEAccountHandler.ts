@@ -4,7 +4,12 @@ const {
     FOEAccountStateSchema
 } = require("./schemas");
 
-export const getFOEAccountState = async (stateStore, address) => {
+export type FOEAccountState = {
+    militaryPowerAtWar: number,
+    rewardDebt: number,
+}
+
+export const getFOEAccountState = async (stateStore, address): Promise<FOEAccountState> => {
     const accountStateBuffer = await stateStore.chain.get(
         `${CHAIN_STATE_ACCOUNT_FOE_PREFIX}${address}`
     );

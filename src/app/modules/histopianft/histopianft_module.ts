@@ -4,17 +4,18 @@ import {
     AfterBlockApplyContext,
     AfterGenesisBlockApplyContext,
     BaseModule,
-    BeforeBlockApplyContext, codec,
+    BeforeBlockApplyContext,
+    codec,
     StateStore,
     TransactionApplyContext
 } from 'lisk-sdk';
-import { getAccountStateAsJson} from "./StateStoreHandlers/accountHandler";
-import { AddTypeAsset } from "./assets/add_type_asset";
-import { addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema } from "./assets/assetsSchemas";
-import { CreateAsset } from "./assets/create_asset";
-import { DestroyAsset } from "./assets/destroy_asset";
-import { SetMintFeeAsset } from "./assets/set_mint_fee_asset";
-import { TransferAsset } from "./assets/transfer_asset";
+import {getAccountStateAsJson} from "./StateStoreHandlers/accountHandler";
+import {AddTypeAsset} from "./assets/add_type_asset";
+import {addTypeSchema, destroyNFTSchema, mintNFTSchema, transferNFTSchema} from "./assets/assetsSchemas";
+import {CreateAsset} from "./assets/create_asset";
+import {DestroyAsset} from "./assets/destroy_asset";
+import {SetMintFeeAsset} from "./assets/set_mint_fee_asset";
+import {TransferAsset} from "./assets/transfer_asset";
 import * as NftHandler from './StateStoreHandlers/nftHandler';
 import * as TypeHandler from './StateStoreHandlers/typeHandler';
 
@@ -40,14 +41,17 @@ export class HistopianftModule extends BaseModule {
         // Example below
         getNFTData: async (params: Record<string, unknown>, stateStore: StateStore): Promise<any> => {
             const { nftId } = params;
-            const nft = await NftHandler.getNFT(stateStore, nftId);
-            return nft;
+            return await NftHandler.getNFT(stateStore, nftId);
         },
-        setNFTLockState: async (params: Record<string, unknown>, stateStore: StateStore): Promise<void> => {
-            const { nftId, lockState } = params;
+        setNFTLockState: async (params: Record<string, unknown>, stateStore: StateStore): Promise<boolean> => {
+            const { nftId, locked } = params;
             const nft = await NftHandler.getNFT(stateStore, nftId);
-            nft.isLocked = lockState;
-            await NftHandler.setNFTState(stateStore, nft)
+            if (nft) {
+                nft.locked = locked;
+                await NftHandler.setNFTState(stateStore, nft)
+                return true;
+            }
+            return false;
         }
     };
 
