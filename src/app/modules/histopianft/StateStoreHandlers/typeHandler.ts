@@ -27,23 +27,22 @@ export const getType = async (stateStore, typeId) => {
     );
 }
 
-export const getTypeAsJson = async (dataAccess, args) => {
+export const getTypeAsJson = async (dataAccess, typeId) => {
     const typesState = await getSystemStateAsJson(dataAccess);
     // console.log("getting type", args.typeId, CHAIN_STATE_TYPE_PREFIX, typeSchema);
 
     if (typesState == undefined) {
         throw new Error("No types registered");
     }
-    if (args.typeId > typesState.registeredTypesCount) {
-        throw new Error("invalid type id "+args.typeId);
+    if (typeId > typesState.registeredTypesCount) {
+        throw new Error("invalid type id "+typeId);
     }
     const registeredTypeBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_TYPE_PREFIX + args.typeId
+        CHAIN_STATE_TYPE_PREFIX + typeId
     );
     if (!registeredTypeBuffer) {
-        throw new Error("No type registered with id "+args.typeId);
+        throw new Error("No type registered with id "+typeId);
     }
-    // console.log("registeredTypeBuffer", registeredTypeBuffer);
     return codec.toJSON(
         typeSchema,
         codec.decode(

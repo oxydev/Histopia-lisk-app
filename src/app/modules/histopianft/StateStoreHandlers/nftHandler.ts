@@ -75,13 +75,12 @@ export const getNFT = async (stateStore, nftId) => {
     );
 }
 
-export const getNFTAsJson = async (dataAccess, args) => {
-    console.log("getNFTAsJson", args);
+export const getNFTAsJson = async (dataAccess, nftId) => {
     const registeredNFTBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_NFT_PREFIX + args.nftId
+        CHAIN_STATE_NFT_PREFIX + nftId
     );
     if (!registeredNFTBuffer) {
-        throw new Error("invalid nft id " + args.nftId);
+        throw new Error("invalid nft id " + nftId);
     }
     let data = codec.decode(
         nftTokenSchema,

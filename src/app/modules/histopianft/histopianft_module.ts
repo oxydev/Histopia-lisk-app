@@ -27,8 +27,9 @@ export class HistopianftModule extends BaseModule {
         getSystemState: async () => {
             return  NftHandler.getSystemStateAsJson(this._dataAccess);
         },
-        getNFT: async (nftId) => {
-            return NftHandler.getNFTAsJson(this._dataAccess, nftId);
+        getNFT: async (params: Record<string, unknown>) => {
+            let { id } = params;
+            return NftHandler.getNFTAsJson(this._dataAccess, id);
         },
         getAccountState: async (params: Record<string, unknown>) => {
             const { address } = params;

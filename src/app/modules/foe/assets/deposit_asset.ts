@@ -30,10 +30,8 @@ export class DepositAsset extends BaseAsset {
         let {tokenIds} = asset;
         for (const tokenId of tokenIds) {
             let nftData = await reducerHandler.invoke('histopianft:getNFTData', {
-                address: senderAddress,
-                params: {
-                    nftId: tokenId,
-                }
+
+                nftId: tokenId,
             });
             console.log("DepositAsset.apply", nftData);
             if (nftData === undefined) {
