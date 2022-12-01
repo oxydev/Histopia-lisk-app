@@ -22,15 +22,7 @@ export const getAccountState = async (stateStore, address) => {
     return accountState;
 }
 
-export const getAccountStateAsJson = async (dataAccess, address) => {
-    if (!address || !address.address) {
-        return {
-            mintedNFTCount: 0,
-            ownedNFTCount: 0,
-            ownedNFTs: []
-        };
-    }
-    let account  = address.address;
+export const getAccountStateAsJson = async (dataAccess, account) => {
     const accountStateBuffer = await dataAccess.getChainState(
         `${CHAIN_STATE_ACCOUNT_PREFIX}:${account}`
     );

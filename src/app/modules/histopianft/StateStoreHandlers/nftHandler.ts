@@ -1,4 +1,4 @@
-const { codec } = require("lisk-sdk");
+const {codec} = require("lisk-sdk");
 const {
     nftTokenSchema,
     CHAIN_STATE_NFT_PREFIX,
@@ -7,49 +7,51 @@ const {
 } = require("./schemas");
 
 export const getSystemState = async (stateStore) => {
-    const nftsStateBuffer = await stateStore.chain.get(
+    const systemStateBuffer = await stateStore.chain.get(
         CHAIN_STATE_SYSTEM
     );
-    if (!nftsStateBuffer) {
+    if (!systemStateBuffer) {
         var buf = Buffer.from('442b6935c96882a40304610284afa29371040bca', 'hex');
 
         return {
             registeredNFTsCount: 0,
-            mintFee: BigInt(2500*10**8),
+            mintFee: BigInt(2500 * 10 ** 8),
             ownerAddress: buf,
             registeredTypesCount: 0,
         };
     }
-    let nftsState = codec.decode(
+    let systemState = codec.decode(
         systemStateStoreSchema,
-        nftsStateBuffer
+        systemStateBuffer
     );
-    return nftsState;
+    return systemState;
 }
 
 export const getSystemStateAsJson = async (dataAccess) => {
-    const nftsStateBuffer = await dataAccess.getChainState(
+    const systemStateBuffer = await dataAccess.getChainState(
         CHAIN_STATE_SYSTEM
     );
-    if (!nftsStateBuffer) {
+    if (!systemStateBuffer) {
         var buf = Buffer.from('442b6935c96882a40304610284afa29371040bca', 'hex');
         return {
             registeredNFTsCount: 0,
-            mintFee: 2500*10**8,
+            mintFee: 2500 * 10 ** 8,
             ownerAddress: buf.toString('hex'),
             registeredTypesCount: 0,
         };
     }
 
 
-    let date =  codec.decode(systemStateStoreSchema,
-        nftsStateBuffer
+    let systemState = codec.decode(
+        systemStateStoreSchema,
+        systemStateBuffer
     );
 
-    date.ownerAddress = date.ownerAddress.toString('hex');
+    systemState.ownerAddress = systemState.ownerAddress.toString('hex');
     return codec.toJSON(
         systemStateStoreSchema
-        ,date);
+        , systemState
+    );
 }
 
 export const getNFT = async (stateStore, nftId) => {
@@ -59,7 +61,7 @@ export const getNFT = async (stateStore, nftId) => {
         throw new Error("No nfts registered");
     }
     if (nftId > nftsState.registeredNFTsCount) {
-        throw new Error("invalid nft id "+nftId);
+        throw new Error("invalid nft id " + nftId);
     }
     const registeredNFTBuffer = await stateStore.chain.get(
         CHAIN_STATE_NFT_PREFIX + nftId
@@ -73,13 +75,12 @@ export const getNFT = async (stateStore, nftId) => {
     );
 }
 
-export const getNFTAsJson = async (dataAccess, args) => {
-    console.log("getNFTAsJson", args);
+export const getNFTAsJson = async (dataAccess, nftId) => {
     const registeredNFTBuffer = await dataAccess.getChainState(
-        CHAIN_STATE_NFT_PREFIX + args.nftId
+        CHAIN_STATE_NFT_PREFIX + nftId
     );
     if (!registeredNFTBuffer) {
-        throw new Error("invalid nft id "+args.nftId);
+        throw new Error("invalid nft id " + nftId);
     }
     let data = codec.decode(
         nftTokenSchema,
@@ -89,21 +90,20 @@ export const getNFTAsJson = async (dataAccess, args) => {
     return codec.toJSON(nftTokenSchema, data);
 }
 
-export const setNFTState = async (stateStore,nftId , nftData) => {
+export const setNFTState = async (stateStore, nftData) => {
     await stateStore.chain.set(
-        CHAIN_STATE_NFT_PREFIX + nftId,
+        CHAIN_STATE_NFT_PREFIX + nftData.id,
         codec.encode(nftTokenSchema, nftData)
     );
 }
 
-export const setSystemState = async (stateStore, newTypesState) => {
+export const setSystemState = async (stateStore, newSystemState) => {
     await stateStore.chain.set(
         CHAIN_STATE_SYSTEM,
-        codec.encode(systemStateStoreSchema, newTypesState)
+        codec.encode(systemStateStoreSchema, newSystemState)
     );
 }
 
 export async function deleteNFT(stateStore, nftId) {
     await stateStore.chain.set(CHAIN_STATE_NFT_PREFIX + nftId, undefined);
 }
-
