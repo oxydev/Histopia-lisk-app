@@ -20,16 +20,16 @@ export const getApplication = (
                 captchaSitekey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
             	// port: 4004,
             	// host: '0.0.0.0',
-                // applicationUrl: 'wss://lisk.histopia.io/wss',
-                applicationUrl: 'ws://localhost:8081/ws',
+                applicationUrl: 'wss://lisk.histopia.io/wss',
+                // applicationUrl: 'ws://localhost:8081/ws',
             	// fee: '0.1',
             	amount: '2600', //2600 * 10^8
             	// tokenPrefix: 'ERA',
             },
 
             dashboard: {
-                // applicationUrl: 'wss://lisk.histopia.io/wss',
-                applicationUrl: 'ws://localhost:8081/ws',
+                applicationUrl: 'wss://lisk.histopia.io/wss',
+                // applicationUrl: 'ws://localhost:8081/ws',
                 port: 4005,
                 host: '127.0.0.1',
                 applicationName: 'Histopia',

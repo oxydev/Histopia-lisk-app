@@ -107,4 +107,3 @@ export const setSystemState = async (stateStore, newSystemState) => {
 export async function deleteNFT(stateStore, nftId) {
     await stateStore.chain.set(CHAIN_STATE_NFT_PREFIX + nftId, undefined);
 }
-
