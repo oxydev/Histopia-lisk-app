@@ -48,7 +48,7 @@ export class WithdrawAsset extends BaseAsset {
         await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, senderAddress);
 
         let {tokenIds} = asset;
-        let depositingMilitaryPower = await this.unlockDepositedNFTsAndCalculateAddedMilitaryPower(tokenIds, reducerHandler, senderAddress);
+        let depositingMilitaryPower = await this.unlockDepositedNFTsAndCalculateReducedMilitaryPower(tokenIds, reducerHandler, senderAddress);
 
         userFoeAccountState.militaryPowerAtWar -= depositingMilitaryPower;
         updatedFoeState.histopianCount -= tokenIds.length;
@@ -58,7 +58,7 @@ export class WithdrawAsset extends BaseAsset {
         await setFOEState(stateStore, updatedFoeState);
     }
 
-    private async unlockDepositedNFTsAndCalculateAddedMilitaryPower(tokenIds: number[], reducerHandler: ReducerHandler, senderAddress: string) : Promise<number>{
+    private async unlockDepositedNFTsAndCalculateReducedMilitaryPower(tokenIds: number[], reducerHandler: ReducerHandler, senderAddress: string) : Promise<number>{
         let depositingMilitaryPower = 0;
         for (const tokenId of tokenIds) {
             let nftData = await reducerHandler.invoke('histopianft:getNFTData', {
@@ -84,5 +84,4 @@ export class WithdrawAsset extends BaseAsset {
         }
         return depositingMilitaryPower;
     }
-
 }

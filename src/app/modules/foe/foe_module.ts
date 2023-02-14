@@ -12,26 +12,20 @@ import {
 import { DepositAsset } from "./assets/deposit_asset";
 import { HarvestAsset } from "./assets/harvest_asset";
 import { WithdrawAsset } from "./assets/withdraw_asset";
+import {getFOEStateAsJson} from "./StateStoreHandlers/FOEStateHandler";
+import {getFOEAccountStateAsJson} from "./StateStoreHandlers/FOEAccountHandler";
 
 export class FoeModule extends BaseModule {
     public actions = {
-        // Example below
-        // getBalance: async (params) => this._dataAccess.account.get(params.address).token.balance,
-        // getBlockByID: async (params) => this._dataAccess.blocks.get(params.id),
+        getFOEState: async () => {
+            return getFOEStateAsJson(this._dataAccess);
+        },
+        getFOEAccountState: async (params: Record<string, unknown>) => {
+            const { address } = params;
+            return getFOEAccountStateAsJson(this._dataAccess, address);
+        }
     };
     public reducers = {
-        // Example below
-        // getBalance: async (
-		// 	params: Record<string, unknown>,
-		// 	stateStore: StateStore,
-		// ): Promise<bigint> => {
-		// 	const { address } = params;
-		// 	if (!Buffer.isBuffer(address)) {
-		// 		throw new Error('Address must be a buffer');
-		// 	}
-		// 	const account = await stateStore.account.getOrDefault<TokenAccount>(address);
-		// 	return account.token.balance;
-		// },
     };
     public name = 'foe';
     public transactionAssets = [new DepositAsset(), new WithdrawAsset(), new HarvestAsset()];
@@ -41,9 +35,6 @@ export class FoeModule extends BaseModule {
     ];
     public id = 1025;
 
-    // public constructor(genesisConfig: GenesisConfig) {
-    //     super(genesisConfig);
-    // }
 
     // Lifecycle hooks
     public async beforeBlockApply(_input: BeforeBlockApplyContext) {
