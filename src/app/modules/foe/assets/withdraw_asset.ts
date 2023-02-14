@@ -2,6 +2,7 @@ import {BaseAsset, ApplyAssetContext, ValidateAssetContext, ReducerHandler} from
 import {getFOEState, setFOEState} from "../StateStoreHandlers/FOEStateHandler";
 import {calculateMilitaryPower, sendPreviousReward, updatePool} from "../poolHelper";
 import {getFOEAccountState, setAccountState} from "../StateStoreHandlers/FOEAccountHandler";
+import {withdrawSchema} from "./assetsSchemas";
 
 export type AssetData = {
     tokenIds: number[],
@@ -12,21 +13,7 @@ export class WithdrawAsset extends BaseAsset {
     public id = 2;
 
     // Define schema for asset
-    public schema = {
-        $id: 'foe/withdraw-asset',
-        title: 'WithdrawAsset transaction asset for foe module',
-        type: 'object',
-        required: ['tokenIds'],
-        properties: {
-            tokenIds: {
-                fieldNumber: 1,
-                type: 'array',
-                items: {
-                    dataType: 'uint32',
-                }
-            }
-        },
-    };
+    public schema = withdrawSchema
 
     public validate({asset}: ValidateAssetContext<AssetData>): void {
         // Validate your asset

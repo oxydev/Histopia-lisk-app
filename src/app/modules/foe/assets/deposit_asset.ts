@@ -1,7 +1,8 @@
 import {BaseAsset, ApplyAssetContext, ValidateAssetContext, ReducerHandler} from 'lisk-sdk';
-import {FOEState, getFOEState, setFOEState} from "../StateStoreHandlers/FOEStateHandler";
+import { getFOEState, setFOEState} from "../StateStoreHandlers/FOEStateHandler";
 import {calculateMilitaryPower, sendPreviousReward, updatePool} from "../poolHelper";
-import {FOEAccountState, getFOEAccountState, setAccountState} from "../StateStoreHandlers/FOEAccountHandler";
+import { getFOEAccountState, setAccountState} from "../StateStoreHandlers/FOEAccountHandler";
+import {depositSchema} from "./assetsSchemas";
 
 
 export type AssetData = {
@@ -13,21 +14,7 @@ export class DepositAsset extends BaseAsset {
     public id = 1;
 
     // Define schema for asset
-    public schema = {
-        $id: 'foe/deposit-asset',
-        title: 'DepositAsset transaction asset for foe module',
-        type: 'object',
-        required: ['tokenIds'],
-        properties: {
-            tokenIds: {
-                fieldNumber: 1,
-                type: 'array',
-                items: {
-                    dataType: 'uint32',
-                }
-            }
-        },
-    };
+    public schema = depositSchema;
 
 
 
