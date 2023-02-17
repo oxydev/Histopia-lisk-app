@@ -12,8 +12,6 @@ import {HarvestAsset} from "./assets/harvest_asset";
 import {WithdrawAsset} from "./assets/withdraw_asset";
 import {getFOEStateAsJson} from "./StateStoreHandlers/FOEStateHandler";
 import {getFOEAccountStateAsJson} from "./StateStoreHandlers/FOEAccountHandler";
-import {mintNFTSchema} from "../histopianft/assets/assetsSchemas";
-import * as NftHandler from "../histopianft/StateStoreHandlers/nftHandler";
 import {depositSchema, withdrawSchema} from "./assets/assetsSchemas";
 
 export class FoeModule extends BaseModule {
@@ -30,8 +28,6 @@ export class FoeModule extends BaseModule {
     public name = 'foe';
     public transactionAssets = [new DepositAsset(), new WithdrawAsset(), new HarvestAsset()];
     public events = [
-        // Example below
-        // 'foe:newBlock',
         "deposit",
         "withdraw",
         "harvest"

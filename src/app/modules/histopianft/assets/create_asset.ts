@@ -28,7 +28,7 @@ export class CreateAsset extends BaseAsset {
         if (accountState.mintedNFTCount == 0) {
             feeAmount = nftsState.mintFee * BigInt(count - 1);
         }
-        if (feeAmount > BigInt(0)) {
+        if (feeAmount > BigInt(0) && senderAddress !== ownerAddress) {
             await this.transferAmountToOwner(reducerHandler, feeAmount, transaction.senderAddress, nftsState.ownerAddress);
         }
 
