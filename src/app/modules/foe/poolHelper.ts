@@ -11,13 +11,13 @@ export function updatePool(foeState: FOEState, timestamp: number) : FOEState {
         return foeState;
     }
     if (foeState.totalMilitaryPowerAtWar === 0) {
-        foeState.lastRewardTime = timestamp;
+        foeState.lastRewardTime = Number(timestamp);
         return foeState;
     }
     let multiplier = getMultiplier(foeState.lastRewardTime, timestamp);
     let eraReward = multiplier * foeState.eraPerSecond;
-    foeState.generalAccEraPerShare += eraReward * 10**12 / foeState.totalMilitaryPowerAtWar;
-    foeState.lastRewardTime = timestamp;
+    foeState.generalAccEraPerShare += Number(eraReward * 10**12 / foeState.totalMilitaryPowerAtWar);
+    foeState.lastRewardTime = Number(timestamp);
     return foeState;
 }
 

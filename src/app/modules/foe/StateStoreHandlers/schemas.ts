@@ -19,9 +19,13 @@ const FOEStateStoreSchema = {
             dataType: "uint64",
             fieldNumber: 3,
         },
-        generalAccEraPerShare: {
+        histopianCount: {
             dataType: "uint64",
             fieldNumber: 4,
+        },
+        generalAccEraPerShare: {
+            dataType: "uint64",
+            fieldNumber: 5,
         }
     }
 }
