@@ -11,12 +11,12 @@ export class HarvestAsset extends BaseAsset {
     // Define schema for asset
     public schema = harvestSchema;
 
-    public validate({asset}: ValidateAssetContext<{}>): void {
+    public validate({}: ValidateAssetContext<{}>): void {
         // Validate your asset
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    public async apply({asset, transaction, stateStore, reducerHandler}: ApplyAssetContext<{}>): Promise<void> {
+    public async apply({transaction, stateStore, reducerHandler}: ApplyAssetContext<{}>): Promise<void> {
         let timestamp = stateStore.chain.lastBlockHeaders[0].timestamp;
         let FOEState = await getFOEState(stateStore);
         let updatedFoeState = await updatePool(FOEState, timestamp);

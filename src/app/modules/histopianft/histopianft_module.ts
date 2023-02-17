@@ -112,7 +112,7 @@ export class HistopianftModule extends BaseModule {
             id: nftId,
             from: _input.transaction.senderAddress.toString('hex'),
             to: to.toString('hex'),
-            txnId: _input.transaction._id.toString('hex'),
+            txnId: _input.transaction.id.toString('hex'),
             blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
         }
         this._channel.publish('histopianft:transferNFT', data);
@@ -124,11 +124,11 @@ export class HistopianftModule extends BaseModule {
             destroyNFTSchema,
             assetBuffer
         );
-        let { _id } =_input.transaction
+        let id =_input.transaction.id
         let data = {
             id: nftId,
             from: _input.transaction.senderAddress.toString('hex'),
-            txnId: _id.toString('hex'),
+            txnId: id.toString('hex'),
             blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
         }
         this._channel.publish('histopianft:destroyNFT', data);
@@ -148,7 +148,7 @@ export class HistopianftModule extends BaseModule {
                 properties: nftProperties,
                 allowedAccessorTypes: allowedAccessorTypes,
                 maxSupply: maxSupply,
-                txnId: _input.transaction._id.toString('hex'),
+                txnId: _input.transaction.id.toString('hex'),
                 blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
             }
             this._channel.publish('histopianft:newType', data);
@@ -169,7 +169,7 @@ export class HistopianftModule extends BaseModule {
                         to: to.toString('hex'),
                         typeId: typeId,
                         properties: nft.nftProperties,
-                        txnId: _input.transaction._id.toString('hex'),
+                        txnId: _input.transaction.id.toString('hex'),
                         blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
                     }
                     this._channel.publish('histopianft:newNFT', data);

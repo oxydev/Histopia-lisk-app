@@ -11,11 +11,15 @@ export class CreateAsset extends BaseAsset {
     // Define schema for asset
     public schema = mintNFTSchema
 
-    public validate({asset}: ValidateAssetContext<{}>): void {
+    public validate({asset: {}}: ValidateAssetContext<{}>): void {
         // Validate your asset
     }
 
-    public async apply({asset: {count, to, typeId}, transaction, reducerHandler, stateStore}: ApplyAssetContext<{}>): Promise<void> {
+    public async apply({asset: {count, to, typeId}, transaction, reducerHandler, stateStore}: ApplyAssetContext<{
+        count: number,
+        to: Buffer,
+        typeId: number
+    }>): Promise<void> {
         let nftsState = await NftHandler.getSystemState(stateStore);
 
         let senderAddress = transaction.senderAddress.toString('hex');

@@ -4,7 +4,8 @@ import {
     AfterBlockApplyContext,
     AfterGenesisBlockApplyContext,
     BaseModule,
-    BeforeBlockApplyContext, codec,
+    BeforeBlockApplyContext,
+    codec,
     TransactionApplyContext
 } from 'lisk-sdk';
 import {DepositAsset} from "./assets/deposit_asset";
@@ -58,12 +59,22 @@ export class FoeModule extends BaseModule {
             this.emitDepositEvent(_input);
         } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 2) {
             this.emitWithdrawEvent(_input);
+        } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 3) {
+            this.emitHarvestEvent(_input);
         }
+    }
+
+    private emitHarvestEvent(_input: TransactionApplyContext) {
+        let from = _input.transaction.senderAddress.toString('hex');
+        let data = {
+            address: from
+        }
+        this._channel.publish('foe:deposit', data);
     }
 
     private emitDepositEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let { tokenIds } = codec.decode(
+        let {tokenIds} = codec.decode(
             depositSchema,
             assetBuffer
         );
@@ -75,7 +86,7 @@ export class FoeModule extends BaseModule {
 
     private emitWithdrawEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let { tokenIds } = codec.decode(
+        let {tokenIds} = codec.decode(
             withdrawSchema,
             assetBuffer
         );
