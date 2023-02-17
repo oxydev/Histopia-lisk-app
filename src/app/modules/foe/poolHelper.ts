@@ -21,12 +21,12 @@ export function updatePool(foeState: FOEState, timestamp: number) : FOEState {
     return foeState;
 }
 
-export const  sendPreviousReward = async (userFoeAccountState: FOEAccountState, updatedFoeState: FOEState, reducerHandler: ReducerHandler, senderAddress: string)  => {
+export const  sendPreviousReward = async (userFoeAccountState: FOEAccountState, updatedFoeState: FOEState, reducerHandler: ReducerHandler, senderAddressBuffer: Buffer)  => {
     if (userFoeAccountState.militaryPowerAtWar > 0) {
-        let pending = (userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 12) - userFoeAccountState.rewardDebt;
+        let pending = (userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 5) - userFoeAccountState.rewardDebt;
         await reducerHandler.invoke('token:credit', {
-            address: senderAddress,
-            amount: pending,
+            address: senderAddressBuffer,
+            amount: BigInt(pending),
         });
     }
 }

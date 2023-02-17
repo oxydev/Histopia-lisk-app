@@ -59,9 +59,8 @@ export class FoeModule extends BaseModule {
             this.emitDepositEvent(_input);
         } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 2) {
             this.emitWithdrawEvent(_input);
-        } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 3) {
-            this.emitHarvestEvent(_input);
-        }
+        } 
+        this.emitHarvestEvent(_input);
     }
 
     private emitHarvestEvent(_input: TransactionApplyContext) {
@@ -74,7 +73,9 @@ export class FoeModule extends BaseModule {
 
     private emitDepositEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let {tokenIds} = codec.decode(
+        let {tokenIds} = codec.decode<{
+            tokenIds: number[]
+        }>(
             depositSchema,
             assetBuffer
         );

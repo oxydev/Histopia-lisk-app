@@ -28,9 +28,9 @@ export class HarvestAsset extends BaseAsset {
             throw new Error('User does not have an account');
         }
 
-        await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, senderAddress);
+        await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, transaction.senderAddress);
 
-        userFoeAccountState.rewardDebt = userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 12;
+        userFoeAccountState.rewardDebt = userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 5;
         await setAccountState(stateStore, senderAddress, userFoeAccountState);
         await setFOEState(stateStore, updatedFoeState);
     }

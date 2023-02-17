@@ -8,23 +8,23 @@ const FOEStateStoreSchema = {
     required: ["totalMilitaryPowerAtWar","eraPerSecond","lastRewardTime" , "generalAccEraPerShare"],
     properties: {
         totalMilitaryPowerAtWar: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 1,
         },
         eraPerSecond: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 2,
         },
         lastRewardTime: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 3,
         },
         histopianCount: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 4,
         },
         generalAccEraPerShare: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 5,
         }
     }
@@ -37,11 +37,11 @@ const FOEAccountStateSchema = {
     required: [],
     properties: {
         militaryPowerAtWar: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 1,
         },
         rewardDebt: {
-            dataType: "uint64",
+            dataType: "uint32",
             fieldNumber: 2,
         }
     }
