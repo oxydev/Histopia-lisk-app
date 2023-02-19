@@ -48,10 +48,13 @@ export class WithdrawAsset extends BaseAsset {
     private async unlockDepositedNFTsAndCalculateReducedMilitaryPower(tokenIds: number[], reducerHandler: ReducerHandler, senderAddress: string) : Promise<number>{
         let depositingMilitaryPower = 0;
         for (const tokenId of tokenIds) {
-            let nftData = await reducerHandler.invoke('histopianft:getNFTData', {
+            let nftData = await reducerHandler.invoke< {
+                ownerAddress: Buffer;
+                locked: boolean;
+            }>('histopianft:getNFTData', {
                 nftId: tokenId,
             });
-            if (nftData === undefined) {
+            if (nftData === undefined || nftData === null) {
                 throw new Error("NFT not found");
             }
             if (nftData.ownerAddress.toString('hex') !== senderAddress) {
