@@ -60,19 +60,26 @@ export class FoeModule extends BaseModule {
         } else if (_input.transaction.moduleID === this.id && _input.transaction.assetID === 2) {
             this.emitWithdrawEvent(_input);
         } 
-        this.emitHarvestEvent(_input);
+        if (_input.transaction.moduleID === this.id) {
+            this.emitHarvestEvent(_input);
+        }
     }
 
     private emitHarvestEvent(_input: TransactionApplyContext) {
         let from = _input.transaction.senderAddress.toString('hex');
         let data = {
-            address: from
+            address: from,
+            txnId: _input.transaction.id.toString('hex'),
+            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+            timestamp: _input.stateStore.chain.lastBlockHeaders[0].timestamp,
         }
-        this._channel.publish('foe:deposit', data);
+        this._channel.publish('foe:harvest', data);
     }
 
     private emitDepositEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
+        let from = _input.transaction.senderAddress.toString('hex');
+
         let {tokenIds} = codec.decode<{
             tokenIds: number[]
         }>(
@@ -80,19 +87,31 @@ export class FoeModule extends BaseModule {
             assetBuffer
         );
         let data = {
-            tokenIds: tokenIds
+            tokenIds: tokenIds,
+            txnId: _input.transaction.id.toString('hex'),
+            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+            timestamp: _input.stateStore.chain.lastBlockHeaders[0].timestamp,
+            address: from
         }
         this._channel.publish('foe:deposit', data);
     }
 
     private emitWithdrawEvent(_input: TransactionApplyContext) {
         let assetBuffer = _input.transaction.asset;
-        let {tokenIds} = codec.decode(
+        let from = _input.transaction.senderAddress.toString('hex');
+
+        let {tokenIds} = codec.decode<{
+            tokenIds: number[]
+        }>(
             withdrawSchema,
             assetBuffer
         );
         let data = {
-            tokenIds: tokenIds
+            tokenIds: tokenIds,
+            txnId: _input.transaction.id.toString('hex'),
+            blockId: _input.stateStore.chain.lastBlockHeaders[0].height,
+            timestamp: _input.stateStore.chain.lastBlockHeaders[0].timestamp,
+            address: from
         }
         this._channel.publish('foe:withdraw', data);
     }

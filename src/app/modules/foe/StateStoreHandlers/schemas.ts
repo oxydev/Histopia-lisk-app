@@ -26,6 +26,10 @@ const FOEStateStoreSchema = {
         generalAccEraPerShare: {
             dataType: "uint32",
             fieldNumber: 5,
+        },
+        totalEraDistributed: {
+            dataType: "uint32",
+            fieldNumber: 6,
         }
     }
 }

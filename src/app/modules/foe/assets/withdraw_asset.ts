@@ -57,8 +57,8 @@ export class WithdrawAsset extends BaseAsset {
             if (nftData.ownerAddress.toString('hex') !== senderAddress) {
                 throw new Error("NFT not owned by sender");
             }
-            if (nftData.locked === true) {
-                throw new Error("NFT is already locked");
+            if (nftData.locked === false) {
+                throw new Error("NFT is not locked");
             }
             depositingMilitaryPower += calculateMilitaryPower(nftData);
             let isLocked = await reducerHandler.invoke('histopianft:setNFTLockState', {

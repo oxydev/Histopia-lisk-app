@@ -19,7 +19,12 @@ export const harvestSchema = {
     title: 'HarvestAsset transaction asset for foe module',
     type: 'object',
     required: [],
-    properties: {},
+    properties: {
+        x: {
+            fieldNumber: 1,
+            dataType: 'uint32',
+        }
+    },
 };
 
 export const withdrawSchema = {
