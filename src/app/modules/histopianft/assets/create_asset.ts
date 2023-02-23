@@ -25,7 +25,6 @@ export class CreateAsset extends BaseAsset {
         let senderAddress = transaction.senderAddress.toString('hex');
         let toAddress = to.toString('hex');
 
-        let nftProperties = await this.generateNftProperties(stateStore, typeId);
         let accountState = await getAccountState(stateStore, senderAddress);
         let feeAmount: BigInt = BigInt(nftsState.mintFee) * BigInt(count);
 
@@ -38,6 +37,8 @@ export class CreateAsset extends BaseAsset {
         }
 
         for (let i = 0; i < count; i++) {
+            let nftProperties = await this.generateNftProperties(stateStore, typeId);
+
             let nftId = nftsState.registeredNFTsCount + 1 + i;
 
             const nftObject = {
