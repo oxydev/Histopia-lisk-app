@@ -17,21 +17,29 @@ export class HarvestAsset extends BaseAsset {
 
     // eslint-disable-next-line @typescript-eslint/require-await
     public async apply({transaction, stateStore, reducerHandler}: ApplyAssetContext<{}>): Promise<void> {
-        let timestamp = stateStore.chain.lastBlockHeaders[0].timestamp;
-        let FOEState = await getFOEState(stateStore);
-        let updatedFoeState = await updatePool(FOEState, timestamp);
+        try {
+            let timestamp = stateStore.chain.lastBlockHeaders[0].timestamp;
+            let FOEState = await getFOEState(stateStore);
+            let updatedFoeState = await updatePool(FOEState, timestamp);
 
-        let senderAddress = transaction.senderAddress.toString('hex');
+            let senderAddress = transaction.senderAddress.toString('hex');
 
-        let userFoeAccountState = await getFOEAccountState(stateStore, senderAddress);
-        if (userFoeAccountState === undefined) {
-            throw new Error('User does not have an account');
+            let userFoeAccountState = await getFOEAccountState(stateStore, senderAddress);
+            if (userFoeAccountState === undefined) {
+                throw new Error('User does not have an account');
+            }
+
+            await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, transaction.senderAddress);
+
+
+            userFoeAccountState.rewardDebt = BigInt(BigInt(userFoeAccountState.militaryPowerAtWar) * BigInt(updatedFoeState.generalAccEraPerShare) / BigInt(10 ** 5));
+
+            
+            await setAccountState(stateStore, senderAddress, userFoeAccountState);
+            await setFOEState(stateStore, updatedFoeState);
+        } catch (e) {
+            console.log(e);
+            throw e;
         }
-
-        await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, transaction.senderAddress);
-
-        userFoeAccountState.rewardDebt = userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 5;
-        await setAccountState(stateStore, senderAddress, userFoeAccountState);
-        await setFOEState(stateStore, updatedFoeState);
     }
 }

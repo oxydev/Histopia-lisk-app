@@ -6,7 +6,8 @@ const {
 
 export type FOEAccountState = {
     militaryPowerAtWar: number,
-    rewardDebt: number,
+    rewardDebt: bigint,
+    totalEraEarned: bigint,
 }
 
 export const getFOEAccountState = async (stateStore, address): Promise<FOEAccountState> => {
@@ -16,7 +17,8 @@ export const getFOEAccountState = async (stateStore, address): Promise<FOEAccoun
     if (!accountStateBuffer) {
         return {
             militaryPowerAtWar: 0,
-            rewardDebt: 0,
+            rewardDebt: BigInt(0),
+            totalEraEarned: BigInt(0),
         };
     }
     return codec.decode(
@@ -30,6 +32,7 @@ export const getFOEAccountStateAsJson = async (dataAccess, address) => {
         return {
             militaryPowerAtWar: 0,
             rewardDebt: 0,
+            totalEraEarned: 0,
         };
     }
     const accountStateBuffer = await dataAccess.getChainState(
@@ -39,6 +42,7 @@ export const getFOEAccountStateAsJson = async (dataAccess, address) => {
         return {
             militaryPowerAtWar: 0,
             rewardDebt: 0,
+            totalEraEarned: 0,
         };
     }
     let accountState = codec.decode(

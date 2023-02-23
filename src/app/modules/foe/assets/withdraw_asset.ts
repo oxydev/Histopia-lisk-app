@@ -32,7 +32,9 @@ export class WithdrawAsset extends BaseAsset {
             throw new Error('User does not have an account');
         }
 
+
         await sendPreviousReward(userFoeAccountState, updatedFoeState, reducerHandler, transaction.senderAddress);
+
 
         let {tokenIds} = asset;
         let depositingMilitaryPower = await this.unlockDepositedNFTsAndCalculateReducedMilitaryPower(tokenIds, reducerHandler, senderAddress);
@@ -40,7 +42,7 @@ export class WithdrawAsset extends BaseAsset {
         userFoeAccountState.militaryPowerAtWar -= depositingMilitaryPower;
         updatedFoeState.histopianCount -= tokenIds.length;
         updatedFoeState.totalMilitaryPowerAtWar -= depositingMilitaryPower;
-        userFoeAccountState.rewardDebt = userFoeAccountState.militaryPowerAtWar * updatedFoeState.generalAccEraPerShare / 10 ** 5;
+        userFoeAccountState.rewardDebt = BigInt(BigInt(userFoeAccountState.militaryPowerAtWar) * updatedFoeState.generalAccEraPerShare / BigInt(10 ** 5));
         await setAccountState(stateStore, senderAddress, userFoeAccountState);
         await setFOEState(stateStore, updatedFoeState);
     }

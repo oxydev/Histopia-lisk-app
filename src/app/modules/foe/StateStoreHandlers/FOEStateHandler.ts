@@ -8,9 +8,9 @@ export type FOEState = {
     totalMilitaryPowerAtWar: number,
     eraPerSecond: number,
     lastRewardTime: number,
-    generalAccEraPerShare: number,
+    generalAccEraPerShare: bigint,
     histopianCount: number,
-    totalEraDistributed: number,
+    totalEraDistributed: bigint,
 }
 
 export const getFOEState = async (stateStore) : Promise<FOEState>=> {
@@ -22,9 +22,9 @@ export const getFOEState = async (stateStore) : Promise<FOEState>=> {
             totalMilitaryPowerAtWar: 0,
             eraPerSecond: 100000000,
             lastRewardTime: 0,
-            generalAccEraPerShare: 0,
+            generalAccEraPerShare:BigInt(0),
             histopianCount: 0,
-            totalEraDistributed: 0,
+            totalEraDistributed: BigInt(0),
         }
     }
     let foeState = codec.decode(
@@ -43,9 +43,9 @@ export const getFOEStateAsJson = async (dataAccess): Promise<FOEState> => {
             totalMilitaryPowerAtWar: 0,
             eraPerSecond: 100000000,
             lastRewardTime: 0,
-            generalAccEraPerShare: 0,
+            generalAccEraPerShare: BigInt(0),
             histopianCount: 0,
-            totalEraDistributed: 0,
+            totalEraDistributed: BigInt(0),
         }
     }
 

@@ -14,8 +14,10 @@ import {WithdrawAsset} from "./assets/withdraw_asset";
 import {getFOEStateAsJson} from "./StateStoreHandlers/FOEStateHandler";
 import {getFOEAccountStateAsJson} from "./StateStoreHandlers/FOEAccountHandler";
 import {depositSchema, withdrawSchema} from "./assets/assetsSchemas";
+import {calculatePendingEra} from "./poolHelper";
 
 export class FoeModule extends BaseModule {
+    time = 0;
     public actions = {
         getFOEState: async () => {
             return getFOEStateAsJson(this._dataAccess);
@@ -23,6 +25,28 @@ export class FoeModule extends BaseModule {
         getFOEAccountState: async (params: Record<string, unknown>) => {
             const {address} = params;
             return getFOEAccountStateAsJson(this._dataAccess, address);
+        }, 
+        getPendingEra: async (params: Record<string, unknown>) => {
+            const {address} = params;
+
+
+            let accountState = await getFOEAccountStateAsJson(this._dataAccess, address);
+            let state = await getFOEStateAsJson(this._dataAccess);
+            let pendingEra = await calculatePendingEra(accountState, state, this.time);
+            console.log("pendingEra", Number(pendingEra));
+            
+            return { amount: Number(pendingEra) };
+        },
+        getPendingEra2: async (params: Record<string, unknown>) => {
+            const {address} = params;
+
+
+            let accountState = await getFOEAccountStateAsJson(this._dataAccess, address);
+            let state = await getFOEStateAsJson(this._dataAccess);
+            let pendingEra = await calculatePendingEra(accountState, state, this.time);
+            console.log("pendingEra", Number(pendingEra));
+            pendingEra = BigInt(pendingEra) + BigInt(10000000000000);
+            return { amount: Number(pendingEra) };
         }
     };
     public reducers = {};
@@ -47,6 +71,7 @@ export class FoeModule extends BaseModule {
         // Get any data from stateStore using block info, below is an example getting a generator
         // const generatorAddress = getAddressFromPublicKey(_input.block.header.generatorPublicKey);
         // const generator = await _input.stateStore.account.get<TokenAccount>(generatorAddress);
+        this.time = _input.block.header.timestamp;
     }
 
     public async beforeTransactionApply(_input: TransactionApplyContext) {

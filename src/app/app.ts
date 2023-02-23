@@ -23,7 +23,7 @@ export const getApplication = (
                 applicationUrl: 'wss://lisk.histopia.io/wss',
                 // applicationUrl: 'ws://localhost:8081/ws',
             	// fee: '0.1',
-            	amount: '2600', //2600 * 10^8
+            	amount: '260000', //2600 * 10^8
             	// tokenPrefix: 'ERA',
             },
 

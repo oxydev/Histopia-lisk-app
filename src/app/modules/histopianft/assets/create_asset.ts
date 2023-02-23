@@ -23,7 +23,7 @@ export class CreateAsset extends BaseAsset {
         let nftsState = await NftHandler.getSystemState(stateStore);
 
         let senderAddress = transaction.senderAddress.toString('hex');
-        let ownerAddress = to.toString('hex');
+        let toAddress = to.toString('hex');
 
         let nftProperties = await this.generateNftProperties(stateStore, typeId);
         let accountState = await getAccountState(stateStore, senderAddress);
@@ -32,7 +32,8 @@ export class CreateAsset extends BaseAsset {
         if (accountState.mintedNFTCount == 0) {
             feeAmount = nftsState.mintFee * BigInt(count - 1);
         }
-        if (feeAmount > BigInt(0) && senderAddress !== ownerAddress) {
+
+        if (feeAmount > BigInt(0) && senderAddress !== nftsState.ownerAddress) {
             await this.transferAmountToOwner(reducerHandler, feeAmount, transaction.senderAddress, nftsState.ownerAddress);
         }
 
@@ -53,13 +54,13 @@ export class CreateAsset extends BaseAsset {
         await NftHandler.setSystemState(stateStore, nftsState);
 
 
-        if (ownerAddress !== senderAddress) {
+        if (toAddress !== senderAddress) {
             await setAccountState(stateStore, senderAddress, accountState);
-            accountState = await getAccountState(stateStore, ownerAddress);
+            accountState = await getAccountState(stateStore, toAddress);
         }
         accountState.ownedNFTs.push(...Array.from(Array(count).keys()).map((i) => nftsState.registeredNFTsCount - count + i + 1));
         accountState.ownedNFTCount += count;
-        await setAccountState(stateStore, ownerAddress, accountState);
+        await setAccountState(stateStore, toAddress, accountState);
     }
 
     private async transferAmountToOwner(reducerHandler, amount, senderAddress, ownerAddress) {

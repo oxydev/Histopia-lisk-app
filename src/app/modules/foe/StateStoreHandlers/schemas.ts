@@ -24,11 +24,11 @@ const FOEStateStoreSchema = {
             fieldNumber: 4,
         },
         generalAccEraPerShare: {
-            dataType: "uint32",
+            dataType: "uint64",
             fieldNumber: 5,
         },
         totalEraDistributed: {
-            dataType: "uint32",
+            dataType: "uint64",
             fieldNumber: 6,
         }
     }
@@ -45,9 +45,13 @@ const FOEAccountStateSchema = {
             fieldNumber: 1,
         },
         rewardDebt: {
-            dataType: "uint32",
+            dataType: "uint64",
             fieldNumber: 2,
-        }
+        },
+        totalEraEarned: {
+            dataType: "uint64",
+            fieldNumber: 3,
+        },
     }
 }
 
