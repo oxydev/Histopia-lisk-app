@@ -48,6 +48,8 @@ export const getFOEStateAsJson = async (dataAccess): Promise<FOEState> => {
             totalEraDistributed: BigInt(0),
         }
     }
+    console.log(foeStateBuffer);
+    
 
 
     let foeState =  codec.decode(FOEStateStoreSchema,

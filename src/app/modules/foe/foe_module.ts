@@ -20,7 +20,12 @@ export class FoeModule extends BaseModule {
     time = 0;
     public actions = {
         getFOEState: async () => {
-            return getFOEStateAsJson(this._dataAccess);
+            console.log("getFOEState");
+            
+            let state = await getFOEStateAsJson(this._dataAccess);
+            console.log("state", state);
+            
+            return state;
         },
         getFOEAccountState: async (params: Record<string, unknown>) => {
             const {address} = params;

@@ -13,6 +13,8 @@ const isKnownRoot = (merkleState: MerkleState, root: Buffer) => {
   }
   let i = merkleState.currentRootIndex;
   do {
+    console.log(bufferToBigInt(merkleState.roots[i]) , i)
+
     if (merkleState.roots[i] && bufferToBigInt(merkleState.roots[i]) == bufferToBigInt(root)) {
       return true;
     }
@@ -73,7 +75,10 @@ export class WithdrawBridgeAsset extends BaseAsset {
       throw new Error('You have provided an invalid root!');
     }
 
-
+    console.log(proof);
+    console.log(publicSignals);
+    
+    
     if(!(await groth16.verify(vKeyJson, publicSignals, proof))){
       throw new Error('You have provided an invalid proof!');
     }

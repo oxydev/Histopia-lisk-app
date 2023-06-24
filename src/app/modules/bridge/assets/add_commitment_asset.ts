@@ -2,6 +2,7 @@ import {BaseAsset, ApplyAssetContext, ValidateAssetContext} from 'lisk-sdk';
 import {getSystemState} from "../../histopianft/StateStoreHandlers/nftHandler";
 import {getMerkleState, setMerkleState} from "../StateStoreHandlers/MerkleStateHandler";
 import {toBigIntBE, toBigIntLE, toBufferLE} from 'bigint-buffer';
+import { log } from 'console';
 
 const circomlib = require("circomlib");
 const mimcsponge = circomlib.mimcsponge;
@@ -73,6 +74,8 @@ export class AddCommitmentAsset extends BaseAsset {
     }
     let commitment = asset.commitment;
     commitment = toBigIntBE(commitment);
+    console.log(commitment);
+    console.log(asset);
 
     let currentIndex = merkleState.nextIndex;
     merkleState.nextIndex += 1;
